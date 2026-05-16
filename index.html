@@ -444,6 +444,9 @@
   }
   .arcadebar .a-stat.score { color: var(--blue); }
   .arcadebar .a-stat.combo { color: var(--orange); }
+  .arcadebar .a-stat.qnum {
+    color: var(--grey); font-size: 13px; font-weight: 800;
+  }
   .arcadebar .a-stat.lives {
     font-size: 14px; letter-spacing: 1px;
     margin-left: auto;
@@ -533,6 +536,7 @@
         <button class="x-btn" id="arcadeQuitBtn">✕</button>
         <span class="a-stat score">💎 <span id="arcScore">0</span></span>
         <span class="a-stat combo">🔥 <span id="arcCombo">×1</span></span>
+        <span class="a-stat qnum" id="arcQNum">1/20</span>
         <span class="a-stat lives" id="arcLives"></span>
       </div>
       <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
@@ -573,6 +577,7 @@
       </div>
       <div class="arcade-rules">
         <strong>How to play</strong><br>
+        🎯 20 questions per run — clear them all to win<br>
         ⏱️ Timer per question gets faster as you score<br>
         🔥 3, 6, 10 correct in a row → ×1.5, ×2, ×3 combo<br>
         ❤️ 3 lives — wrong answer or timeout costs one<br>
@@ -1094,11 +1099,12 @@ const HEARTS_PER_LESSON = 5;
 
 /* Arcade tuning */
 const ARCADE_LIVES = 3;
+const ARCADE_QUESTIONS_PER_RUN = 20;
 const ARCADE_BASE_TIMER = 15;
 const ARCADE_MIN_TIMER = 6;
 const ARCADE_BASE_POINTS = 10;
-const ARCADE_TIER_L2 = 10;   // score at which L2 questions enter the pool
-const ARCADE_TIER_L3 = 25;   // score at which L3 questions enter the pool
+const ARCADE_TIER_L2 = 8;    // score at which L2 questions enter the pool
+const ARCADE_TIER_L3 = 20;   // score at which L3 questions enter the pool
 
 let state = {
   xp: 0,
@@ -1776,6 +1782,8 @@ function stopArcadeTimer() {
 function syncArcadeBar() {
   document.getElementById("arcScore").textContent = session.score;
   document.getElementById("arcCombo").textContent = comboText(session.streak);
+  const qDisplay = Math.max(1, Math.min(session.qNum || 1, ARCADE_QUESTIONS_PER_RUN));
+  document.getElementById("arcQNum").textContent = qDisplay + "/" + ARCADE_QUESTIONS_PER_RUN;
   const livesEl = document.getElementById("arcLives");
   livesEl.innerHTML = "";
   for (let i = 0; i < ARCADE_LIVES; i++) {
@@ -1802,6 +1810,8 @@ function startArcadeRun() {
     score: 0,
     streak: 0,
     lives: ARCADE_LIVES,
+    qNum: 0,
+    correctCount: 0,
     recent: [],
     remaining: [],
     response: null,
@@ -1818,9 +1828,11 @@ function startArcadeRun() {
 
 function arcadeNextExercise() {
   if (!session || session.mode !== "arcade") return;
-  if (session.lives <= 0) { arcadeEnd(); return; }
+  if (session.lives <= 0) { arcadeEnd(false); return; }
+  session.qNum = (session.qNum || 0) + 1;
+  if (session.qNum > ARCADE_QUESTIONS_PER_RUN) { arcadeEnd(true); return; }
   const ex = pickArcadeExercise();
-  if (!ex) { arcadeEnd(); return; }
+  if (!ex) { arcadeEnd(false); return; }
   session.remaining = [ex];
   session.response = null;
   session.answered = false;
@@ -1849,6 +1861,7 @@ function arcadeEvaluate(timedOut) {
   let earned = 0;
   if (correct) {
     session.streak++;
+    session.correctCount = (session.correctCount || 0) + 1;
     earned = Math.round(ARCADE_BASE_POINTS * comboFor(session.streak));
     session.score += earned;
     playCorrect();
@@ -1890,9 +1903,10 @@ function renderArcadeFooter(correct, ex, earned, timedOut) {
   session.advanceId = setTimeout(() => arcadeNextExercise(), delay);
 }
 
-function arcadeEnd() {
+function arcadeEnd(cleared) {
   stopArcadeTimer();
   const finalScore = session ? session.score : 0;
+  const correctCount = session ? (session.correctCount || 0) : 0;
   const beat = finalScore > arcadeHi;
   if (beat) {
     arcadeHi = finalScore;
@@ -1900,14 +1914,17 @@ function arcadeEnd() {
   }
   const inner = document.getElementById("arcadeEndInner");
   inner.innerHTML = "";
-  inner.appendChild(el("div", "big-emoji", beat ? "🏆" : "🎮"));
-  inner.appendChild(el("h2", "arcade-title", "Game Over"));
-  inner.appendChild(el("div", "sub", "Nice run."));
+  inner.appendChild(el("div", "big-emoji", cleared ? "🏆" : "🎮"));
+  inner.appendChild(el("h2", "arcade-title", cleared ? "Run complete!" : "Game over"));
+  inner.appendChild(el("div", "sub",
+    cleared ? `You cleared all ${ARCADE_QUESTIONS_PER_RUN} questions.`
+            : "Lost all your lives. Try again!"));
   if (beat) inner.appendChild(el("div", "new-hi-badge", "🏆 New high score!"));
 
   const row = el("div", "reward-row");
   row.innerHTML =
     `<div class="reward purple"><div class="r-label">Score</div><div class="r-value">${finalScore}</div></div>
+     <div class="reward"><div class="r-label">Correct</div><div class="r-value">${correctCount}/${ARCADE_QUESTIONS_PER_RUN}</div></div>
      <div class="reward blue"><div class="r-label">High</div><div class="r-value">${arcadeHi}</div></div>`;
   inner.appendChild(row);
 
@@ -1925,6 +1942,7 @@ function arcadeEnd() {
   inner.appendChild(actions);
 
   showScreen("arcadeEndScreen");
+  if (cleared) launchConfetti(document.getElementById("arcadeEndScreen").firstElementChild);
 }
 
 function quitArcadeRun() {
