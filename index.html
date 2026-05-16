@@ -400,6 +400,93 @@
   @keyframes fall {
     to { transform: translateY(120vh) rotate(540deg); opacity: .9; }
   }
+
+  /* ---------- arcade CTA on map ---------- */
+  .arcade-cta-wrap { padding: 4px 14px 6px; }
+  .arcade-cta {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; padding: 13px 14px;
+    border: 3px solid var(--purple);
+    background: linear-gradient(135deg, #f8efff 0%, #efe0ff 100%);
+    border-radius: 18px; cursor: pointer;
+    text-align: left;
+    box-shadow: 0 4px 0 var(--purple-d);
+    font-family: 'Nunito', sans-serif;
+    transition: transform .08s, box-shadow .08s;
+  }
+  .arcade-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--purple-d); }
+  .arcade-cta[disabled] {
+    border-color: var(--grey-l); background: #fafafa;
+    box-shadow: 0 4px 0 #cfcfcf; cursor: not-allowed; opacity: .85;
+  }
+  .arcade-cta .ac-emoji { font-size: 28px; line-height: 1; flex-shrink: 0; }
+  .arcade-cta .ac-text { flex: 1; min-width: 0; }
+  .arcade-cta .ac-title {
+    font-family: 'Baloo 2'; font-weight: 800; font-size: 18px;
+    color: var(--purple-d);
+  }
+  .arcade-cta[disabled] .ac-title { color: var(--grey); }
+  .arcade-cta .ac-sub { font-size: 11px; font-weight: 800; color: var(--grey); margin-top: 1px; }
+  .arcade-cta .ac-arrow {
+    font-size: 22px; font-weight: 900; color: var(--purple); padding-right: 4px;
+  }
+  .arcade-cta[disabled] .ac-arrow { color: var(--grey); }
+
+  /* ---------- arcade gameplay bar ---------- */
+  .arcadebar { padding: 14px 16px 6px; }
+  .arcadebar .topline {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+  }
+  .arcadebar .topline .x-btn { padding: 0 4px 0 0; }
+  .arcadebar .a-stat {
+    font-weight: 900; font-size: 16px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .arcadebar .a-stat.score { color: var(--blue); }
+  .arcadebar .a-stat.combo { color: var(--orange); }
+  .arcadebar .a-stat.lives {
+    font-size: 14px; letter-spacing: 1px;
+    margin-left: auto;
+  }
+  .arcadebar .a-stat.lives span { display: inline-block; }
+  .timer-track {
+    height: 10px; background: var(--grey-l);
+    border-radius: 6px; overflow: hidden;
+  }
+  .timer-fill {
+    height: 100%; width: 100%;
+    background: var(--green); border-radius: 6px;
+    box-shadow: inset 0 3px 0 rgba(255,255,255,.35);
+  }
+  .timer-fill.low {
+    background: var(--red);
+    animation: timerBlink .55s ease-in-out infinite;
+  }
+  @keyframes timerBlink { 0%,100%{ opacity: 1; } 50%{ opacity: .55; } }
+
+  /* ---------- arcade intro / end ---------- */
+  .arcade-rules {
+    color: var(--ink); font-weight: 700; font-size: 13px;
+    line-height: 1.7;
+    background: #f7f7f7; padding: 12px 14px;
+    border-radius: 12px;
+    text-align: left;
+    max-width: 320px;
+    margin: 6px 0 16px;
+  }
+  .arcade-rules strong { font-family: 'Baloo 2'; font-size: 14px; }
+  .btn.purple {
+    background: var(--purple); box-shadow: 0 4px 0 var(--purple-d);
+  }
+  .btn.purple:active { box-shadow: 0 2px 0 var(--purple-d); }
+  .center-screen .arcade-title { color: var(--purple-d); }
+  .reward.purple { border-color: var(--purple); }
+  .reward.purple .r-label { color: var(--purple-d); }
+  .new-hi-badge {
+    background: var(--gold); color: #7a5b00;
+    font-weight: 900; font-size: 13px; letter-spacing: .5px;
+    padding: 6px 14px; border-radius: 20px; text-transform: uppercase;
+  }
 </style>
 </head>
 <body>
@@ -420,16 +507,35 @@
       <h1>PyLingo</h1>
       <p>Learn Python the fun way</p>
     </div>
+    <div class="arcade-cta-wrap">
+      <button class="arcade-cta" id="openArcadeBtn">
+        <span class="ac-emoji">🎮</span>
+        <div class="ac-text">
+          <div class="ac-title">Arcade Mode</div>
+          <div class="ac-sub" id="arcadeCtaSub">Speed run · combos · high score</div>
+        </div>
+        <span class="ac-arrow">→</span>
+      </button>
+    </div>
     <main id="path"></main>
     <div class="credit">A Duolingo-style Python trainer · built with Claude Code</div>
   </div>
 
-  <!-- ============ LESSON SCREEN ============ -->
+  <!-- ============ LESSON / ARCADE GAMEPLAY SCREEN ============ -->
   <div id="lessonScreen" class="screen hidden">
-    <div class="lessonbar">
+    <div class="lessonbar" id="lessonbar">
       <button class="x-btn" id="quitBtn">✕</button>
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
       <div class="hearts" id="heartsEl"></div>
+    </div>
+    <div class="arcadebar hidden" id="arcadebar">
+      <div class="topline">
+        <button class="x-btn" id="arcadeQuitBtn">✕</button>
+        <span class="a-stat score">💎 <span id="arcScore">0</span></span>
+        <span class="a-stat combo">🔥 <span id="arcCombo">×1</span></span>
+        <span class="a-stat lives" id="arcLives"></span>
+      </div>
+      <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
     </div>
     <main id="exArea"></main>
     <div class="lesson-footer" id="lessonFooter"></div>
@@ -451,6 +557,37 @@
         <button class="btn ghost wide" id="failHomeBtn">Back to map</button>
       </div>
     </div>
+  </div>
+
+  <!-- ============ ARCADE INTRO SCREEN ============ -->
+  <div id="arcadeIntroScreen" class="screen hidden">
+    <div class="center-screen">
+      <div class="big-emoji">🎮</div>
+      <h2 class="arcade-title">Arcade Mode</h2>
+      <div class="sub">Answer fast. Don't lose your lives.</div>
+      <div class="reward-row">
+        <div class="reward purple">
+          <div class="r-label">High Score</div>
+          <div class="r-value" id="arcadeHi">0</div>
+        </div>
+      </div>
+      <div class="arcade-rules">
+        <strong>How to play</strong><br>
+        ⏱️ Timer per question gets faster as you score<br>
+        🔥 3, 6, 10 correct in a row → ×1.5, ×2, ×3 combo<br>
+        ❤️ 3 lives — wrong answer or timeout costs one<br>
+        🎓 Questions come from the levels you've cleared
+      </div>
+      <div class="footer-actions">
+        <button class="btn purple wide" id="arcadeStartBtn">Start Run</button>
+        <button class="btn ghost wide" id="arcadeIntroBackBtn">Back to map</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ARCADE END SCREEN ============ -->
+  <div id="arcadeEndScreen" class="screen hidden">
+    <div class="center-screen" id="arcadeEndInner"></div>
   </div>
 
 </div>
@@ -952,7 +1089,16 @@ const ADVANCED_UNLOCK_THRESHOLD = 2;  // L2 cleared in this many core topics
 const STORAGE_KEY = "pylingo_v2";
 const LEGACY_KEY  = "pylingo_v1";
 const SOUND_KEY   = "pylingo_sound";
+const ARCADE_HI_KEY = "pylingo_arcade_hi";
 const HEARTS_PER_LESSON = 5;
+
+/* Arcade tuning */
+const ARCADE_LIVES = 3;
+const ARCADE_BASE_TIMER = 15;
+const ARCADE_MIN_TIMER = 6;
+const ARCADE_BASE_POINTS = 10;
+const ARCADE_TIER_L2 = 10;   // score at which L2 questions enter the pool
+const ARCADE_TIER_L3 = 25;   // score at which L3 questions enter the pool
 
 let state = {
   xp: 0,
@@ -962,6 +1108,7 @@ let state = {
 };
 
 let audioEnabled = true;
+let arcadeHi = 0;
 
 function loadState() {
   try {
@@ -986,12 +1133,20 @@ function loadState() {
     const s = localStorage.getItem(SOUND_KEY);
     if (s != null) audioEnabled = JSON.parse(s);
   } catch (e) {}
+
+  try {
+    const h = localStorage.getItem(ARCADE_HI_KEY);
+    if (h != null) arcadeHi = parseInt(h, 10) || 0;
+  } catch (e) {}
 }
 function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
 }
 function saveSound() {
   try { localStorage.setItem(SOUND_KEY, JSON.stringify(audioEnabled)); } catch (e) {}
+}
+function saveArcadeHi() {
+  try { localStorage.setItem(ARCADE_HI_KEY, String(arcadeHi)); } catch (e) {}
 }
 
 /* ---- dates / streak ---- */
@@ -1111,7 +1266,8 @@ function playWrong() {
 }
 
 /* ===================== SCREENS ===================== */
-const screens = ["mapScreen", "lessonScreen", "completeScreen", "failScreen"];
+const screens = ["mapScreen", "lessonScreen", "completeScreen", "failScreen",
+                 "arcadeIntroScreen", "arcadeEndScreen"];
 function showScreen(id) {
   screens.forEach(s => document.getElementById(s).classList.toggle("hidden", s !== id));
   window.scrollTo(0, 0);
@@ -1122,6 +1278,7 @@ function renderMap() {
   document.getElementById("streakVal").textContent = state.streak;
   document.getElementById("xpVal").textContent = state.xp;
   document.getElementById("crownVal").textContent = Object.keys(state.completed).length;
+  refreshArcadeCta();
 
   const path = document.getElementById("path");
   path.innerHTML = "";
@@ -1195,6 +1352,7 @@ function startLesson(lessonId) {
   if (!found) return;
   initAudio();  // first user gesture inside the app — prime audio context
   session = {
+    mode: "lesson",
     lessonId,
     topic: found.topic,
     level: found.level,
@@ -1207,6 +1365,8 @@ function startLesson(lessonId) {
     answered: false,
     lastCorrect: false
   };
+  document.getElementById("lessonbar").classList.remove("hidden");
+  document.getElementById("arcadebar").classList.add("hidden");
   showScreen("lessonScreen");
   renderHearts();
   renderProgress();
@@ -1383,7 +1543,8 @@ function correctText(ex) {
 }
 
 function checkAnswer() {
-  if (session.answered) return;
+  if (!session || session.answered) return;
+  if (session.mode === "arcade") { arcadeEvaluate(false); return; }
   const ex = session.remaining[0];
   session.answered = true;
   document.getElementById("exArea").style.pointerEvents = "none";
@@ -1508,6 +1669,273 @@ function launchConfetti(container) {
   }
 }
 
+/* ===================== ARCADE MODE ===================== */
+function refreshArcadeCta() {
+  const btn = document.getElementById("openArcadeBtn");
+  const sub = document.getElementById("arcadeCtaSub");
+  if (!btn) return;
+  const hasAny = Object.keys(state.completed).length > 0;
+  btn.disabled = !hasAny;
+  if (hasAny) {
+    sub.textContent = arcadeHi > 0
+      ? `Speed run · combos · high ${arcadeHi}`
+      : "Speed run · combos · high score";
+  } else {
+    sub.textContent = "Clear any Level 1 to unlock";
+  }
+}
+
+function arcadeMaxLevelForScore(score) {
+  if (score >= ARCADE_TIER_L3) return 3;
+  if (score >= ARCADE_TIER_L2) return 2;
+  return 1;
+}
+
+function arcadePool(score) {
+  const maxLevel = arcadeMaxLevelForScore(score);
+  const pool = [];
+  TOPICS.forEach(t => {
+    t.levels.forEach((lvl, idx) => {
+      if (!state.completed[lvl.id]) return;
+      if (idx + 1 > maxLevel) return;
+      lvl.exercises.forEach(ex => pool.push(ex));
+    });
+  });
+  if (pool.length === 0) {
+    // Fallback: any completed level, regardless of tier
+    TOPICS.forEach(t => {
+      t.levels.forEach(lvl => {
+        if (!state.completed[lvl.id]) return;
+        lvl.exercises.forEach(ex => pool.push(ex));
+      });
+    });
+  }
+  return pool;
+}
+
+function pickArcadeExercise() {
+  const pool = arcadePool(session.score);
+  if (pool.length === 0) return null;
+  const recent = session.recent || [];
+  let fresh = pool.filter(ex => !recent.includes(ex));
+  if (fresh.length === 0) fresh = pool;
+  const pick = fresh[Math.floor(Math.random() * fresh.length)];
+  session.recent = (session.recent || []).concat(pick).slice(-5);
+  return pick;
+}
+
+function timerForScore(score) {
+  const drop = Math.floor(score / 5);
+  return Math.max(ARCADE_BASE_TIMER - drop, ARCADE_MIN_TIMER);
+}
+
+function comboFor(streak) {
+  if (streak >= 10) return 3;
+  if (streak >= 6)  return 2;
+  if (streak >= 3)  return 1.5;
+  return 1;
+}
+function comboText(streak) {
+  const m = comboFor(streak);
+  return "×" + (m === 1.5 ? "1.5" : String(m));
+}
+
+function startArcadeTimer(durationSec) {
+  stopArcadeTimer();
+  const fill = document.getElementById("timerFill");
+  if (!fill) return;
+  fill.classList.remove("low");
+  fill.style.transition = "none";
+  fill.style.width = "100%";
+  void fill.offsetWidth;  // force reflow before transitioning
+  fill.style.transition = `width ${durationSec}s linear`;
+  fill.style.width = "0%";
+  session.timerExpireId = setTimeout(() => {
+    if (!session || session.answered) return;
+    arcadeEvaluate(true);  // true = timed out
+  }, durationSec * 1000);
+  session.timerLowId = setTimeout(() => {
+    const f = document.getElementById("timerFill");
+    if (f) f.classList.add("low");
+  }, durationSec * 700);
+}
+function stopArcadeTimer() {
+  if (!session) return;
+  if (session.timerExpireId) clearTimeout(session.timerExpireId);
+  if (session.timerLowId) clearTimeout(session.timerLowId);
+  if (session.advanceId) clearTimeout(session.advanceId);
+  session.timerExpireId = session.timerLowId = session.advanceId = null;
+  const fill = document.getElementById("timerFill");
+  if (fill) {
+    const w = getComputedStyle(fill).width;
+    fill.style.transition = "none";
+    fill.style.width = w;
+  }
+}
+
+function syncArcadeBar() {
+  document.getElementById("arcScore").textContent = session.score;
+  document.getElementById("arcCombo").textContent = comboText(session.streak);
+  const livesEl = document.getElementById("arcLives");
+  livesEl.innerHTML = "";
+  for (let i = 0; i < ARCADE_LIVES; i++) {
+    const h = document.createElement("span");
+    h.textContent = "❤️";
+    if (i >= session.lives) {
+      h.style.opacity = ".25";
+      h.style.filter = "grayscale(1)";
+    }
+    livesEl.appendChild(h);
+  }
+}
+
+function openArcade() {
+  if (Object.keys(state.completed).length === 0) return;
+  document.getElementById("arcadeHi").textContent = arcadeHi;
+  showScreen("arcadeIntroScreen");
+}
+
+function startArcadeRun() {
+  initAudio();
+  session = {
+    mode: "arcade",
+    score: 0,
+    streak: 0,
+    lives: ARCADE_LIVES,
+    recent: [],
+    remaining: [],
+    response: null,
+    answered: false,
+    build: null,
+    lastCorrect: false
+  };
+  document.getElementById("lessonbar").classList.add("hidden");
+  document.getElementById("arcadebar").classList.remove("hidden");
+  syncArcadeBar();
+  showScreen("lessonScreen");
+  arcadeNextExercise();
+}
+
+function arcadeNextExercise() {
+  if (!session || session.mode !== "arcade") return;
+  if (session.lives <= 0) { arcadeEnd(); return; }
+  const ex = pickArcadeExercise();
+  if (!ex) { arcadeEnd(); return; }
+  session.remaining = [ex];
+  session.response = null;
+  session.answered = false;
+  syncArcadeBar();
+  renderExercise();
+  startArcadeTimer(timerForScore(session.score));
+}
+
+function arcadeEvaluate(timedOut) {
+  if (!session || session.answered) return;
+  session.answered = true;
+  stopArcadeTimer();
+  const ex = session.remaining[0];
+  document.getElementById("exArea").style.pointerEvents = "none";
+
+  const correct = !timedOut && isCorrect(ex);
+  session.lastCorrect = correct;
+
+  if (ex.type === "mc") {
+    document.querySelectorAll(".choice").forEach(c => {
+      if (c.dataset.value === ex.answer) c.classList.add("right");
+      else if (c.dataset.value === session.response) c.classList.add("wrong");
+    });
+  }
+
+  let earned = 0;
+  if (correct) {
+    session.streak++;
+    earned = Math.round(ARCADE_BASE_POINTS * comboFor(session.streak));
+    session.score += earned;
+    playCorrect();
+  } else {
+    session.lives--;
+    session.streak = 0;
+    playWrong();
+  }
+  syncArcadeBar();
+  renderArcadeFooter(correct, ex, earned, !!timedOut);
+}
+
+function renderArcadeFooter(correct, ex, earned, timedOut) {
+  const f = document.getElementById("lessonFooter");
+  f.className = "lesson-footer " + (correct ? "correct" : "wrong");
+  f.innerHTML = "";
+
+  const head = el("div", "fb-head");
+  head.appendChild(el("div", "fb-badge", correct ? "✓" : "✕"));
+  let text;
+  if (correct) {
+    const mult = comboFor(session.streak);
+    text = mult > 1
+      ? `+${earned}  (${mult}× combo)`
+      : `+${earned}`;
+  } else if (timedOut) {
+    text = "Time's up!";
+  } else {
+    text = "Not quite";
+  }
+  head.appendChild(el("div", "fb-text", text));
+  f.appendChild(head);
+
+  if (!correct) {
+    f.appendChild(el("div", "fb-solution", "Correct answer:  " + esc(correctText(ex))));
+  }
+
+  const delay = correct ? 1100 : 1800;
+  session.advanceId = setTimeout(() => arcadeNextExercise(), delay);
+}
+
+function arcadeEnd() {
+  stopArcadeTimer();
+  const finalScore = session ? session.score : 0;
+  const beat = finalScore > arcadeHi;
+  if (beat) {
+    arcadeHi = finalScore;
+    saveArcadeHi();
+  }
+  const inner = document.getElementById("arcadeEndInner");
+  inner.innerHTML = "";
+  inner.appendChild(el("div", "big-emoji", beat ? "🏆" : "🎮"));
+  inner.appendChild(el("h2", "arcade-title", "Game Over"));
+  inner.appendChild(el("div", "sub", "Nice run."));
+  if (beat) inner.appendChild(el("div", "new-hi-badge", "🏆 New high score!"));
+
+  const row = el("div", "reward-row");
+  row.innerHTML =
+    `<div class="reward purple"><div class="r-label">Score</div><div class="r-value">${finalScore}</div></div>
+     <div class="reward blue"><div class="r-label">High</div><div class="r-value">${arcadeHi}</div></div>`;
+  inner.appendChild(row);
+
+  const actions = el("div", "footer-actions");
+  const again = el("button", "btn purple wide", "Play Again");
+  again.addEventListener("click", () => startArcadeRun());
+  const back = el("button", "btn ghost wide", "Back to map");
+  back.addEventListener("click", () => {
+    session = null;
+    renderMap();
+    showScreen("mapScreen");
+  });
+  actions.appendChild(again);
+  actions.appendChild(back);
+  inner.appendChild(actions);
+
+  showScreen("arcadeEndScreen");
+}
+
+function quitArcadeRun() {
+  if (!session || session.mode !== "arcade") return;
+  if (!confirm("Quit this run? Your score won't count.")) return;
+  stopArcadeTimer();
+  session = null;
+  renderMap();
+  showScreen("mapScreen");
+}
+
 /* ===================== KEYBOARD ===================== */
 function onPrimaryKey() {
   const cont = document.getElementById("continueBtn");
@@ -1557,6 +1985,13 @@ document.getElementById("soundBtn").addEventListener("click", () => {
   syncSoundButton();
   if (audioEnabled) { initAudio(); playCorrect(); }
 });
+
+document.getElementById("openArcadeBtn").addEventListener("click", openArcade);
+document.getElementById("arcadeStartBtn").addEventListener("click", startArcadeRun);
+document.getElementById("arcadeIntroBackBtn").addEventListener("click", () => {
+  showScreen("mapScreen");
+});
+document.getElementById("arcadeQuitBtn").addEventListener("click", quitArcadeRun);
 
 /* ===================== INIT ===================== */
 loadState();
