@@ -2,8 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>PyLingo — Learn Python the fun way</title>
+<meta name="description" content="A Duolingo-style trainer for learning Python." />
+<meta name="theme-color" content="#58cc02" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" type="image/png" href="./icon-192.png" />
+<link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="PyLingo" />
+<meta name="mobile-web-app-capable" content="yes" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
@@ -490,6 +499,33 @@
     font-weight: 900; font-size: 13px; letter-spacing: .5px;
     padding: 6px 14px; border-radius: 20px; text-transform: uppercase;
   }
+
+  /* ---------- update banner ---------- */
+  .update-banner {
+    position: fixed;
+    left: 50%; bottom: calc(14px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 12px;
+    background: var(--ink); color: #fff;
+    padding: 10px 12px 10px 16px;
+    border-radius: 14px;
+    font-weight: 800; font-size: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25);
+    z-index: 1000;
+    max-width: calc(100% - 28px);
+  }
+  .update-banner .btn {
+    padding: 8px 14px; font-size: 13px; border-radius: 10px;
+    background: var(--green); box-shadow: 0 3px 0 var(--green-d);
+    text-transform: uppercase; letter-spacing: .4px;
+  }
+  .update-banner .btn:active { box-shadow: 0 1px 0 var(--green-d); }
+  .update-dismiss {
+    background: none; border: none; cursor: pointer;
+    color: #fff; opacity: .6; font-size: 18px; font-weight: 900;
+    padding: 4px 6px; line-height: 1;
+  }
+  .update-dismiss:hover { opacity: 1; }
 </style>
 </head>
 <body>
@@ -595,6 +631,13 @@
     <div class="center-screen" id="arcadeEndInner"></div>
   </div>
 
+</div>
+
+<!-- ============ UPDATE BANNER ============ -->
+<div class="update-banner hidden" id="updateBanner">
+  <span>New version ready</span>
+  <button class="btn" id="updateBtn">Update</button>
+  <button class="update-dismiss" id="updateDismiss" aria-label="Dismiss">✕</button>
 </div>
 
 <script>
@@ -2016,6 +2059,54 @@ loadState();
 syncSoundButton();
 renderMap();
 showScreen("mapScreen");
+
+/* ===================== PWA SERVICE WORKER ===================== */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => {
+        // Trigger an update check on every load. Combined with the
+        // network-first HTML strategy, this is enough for students to
+        // pick up content changes automatically.
+        reg.update().catch(() => {});
+
+        reg.addEventListener("updatefound", () => {
+          const newSW = reg.installing;
+          if (!newSW) return;
+          newSW.addEventListener("statechange", () => {
+            // A new SW has finished installing AND there's already a
+            // controlling SW — i.e. this is a real update, not a
+            // first install. Offer the user a refresh.
+            if (newSW.state === "installed" && navigator.serviceWorker.controller) {
+              showUpdateBanner(newSW);
+            }
+          });
+        });
+      })
+      .catch(err => console.warn("SW registration failed:", err));
+
+    // When the new SW activates and takes control, reload once so the
+    // user lands on the fresh HTML.
+    let reloading = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (reloading) return;
+      reloading = true;
+      window.location.reload();
+    });
+  });
+}
+
+function showUpdateBanner(waitingSW) {
+  const banner = document.getElementById("updateBanner");
+  if (!banner) return;
+  banner.classList.remove("hidden");
+  document.getElementById("updateBtn").onclick = () => {
+    if (waitingSW) waitingSW.postMessage({ type: "SKIP_WAITING" });
+  };
+  document.getElementById("updateDismiss").onclick = () => {
+    banner.classList.add("hidden");
+  };
+}
 </script>
 </body>
 </html>
