@@ -21,6 +21,8 @@
     --red: #ff4b4b;
     --red-d: #ea2b2b;
     --red-l: #ffdfe0;
+    --teal: #14b8a6;
+    --teal-d: #0e8a7a;
     --gold: #ffc800;
     --ink: #3c3c3c;
     --grey: #afafaf;
@@ -86,7 +88,7 @@
   .btn[disabled]:active { transform: none; box-shadow: 0 4px 0 #cfcfcf; }
   .btn.wide { width: 100%; }
 
-  /* ---------- map / topbar ---------- */
+  /* ---------- topbar ---------- */
   .topbar {
     position: sticky; top: 0; z-index: 10;
     display: flex; align-items: center; gap: 14px;
@@ -100,103 +102,155 @@
   .stat.xp { color: var(--blue); }
   .stat.crown { color: var(--orange); }
   .topbar .spacer { flex: 1; }
-  .gear {
+  .icon-btn {
     background: none; border: none; cursor: pointer;
-    font-size: 20px; opacity: .5; padding: 4px;
+    font-size: 20px; opacity: .55; padding: 4px;
   }
-  .gear:hover { opacity: 1; }
+  .icon-btn:hover { opacity: 1; }
 
   .map-hero {
     text-align: center;
-    padding: 26px 20px 8px;
+    padding: 20px 20px 4px;
   }
-  .map-hero .mascot { font-size: 56px; line-height: 1; }
-  .map-hero h1 { font-size: 30px; color: var(--green-d); margin-top: 6px; }
-  .map-hero p { color: var(--grey); font-weight: 700; margin-top: 2px; }
+  .map-hero .mascot { font-size: 52px; line-height: 1; }
+  .map-hero h1 { font-size: 28px; color: var(--green-d); margin-top: 4px; }
+  .map-hero p { color: var(--grey); font-weight: 700; margin-top: 2px; font-size: 14px; }
 
-  #path { padding: 10px 0 40px; }
+  #path { padding: 6px 0 28px; }
 
-  .unit-header {
+  /* ---------- topic cards ---------- */
+  .topic-card {
+    margin: 14px;
+    border-radius: 22px;
+    background: #fff;
+    border: 3px solid var(--grey-l);
+    overflow: hidden;
+    box-shadow: 0 3px 0 rgba(0,0,0,.04);
+  }
+  .topic-card.locked-topic { opacity: .92; }
+  .topic-card.locked-topic .topic-header {
+    background: var(--grey-l) !important;
+    color: var(--grey);
+  }
+
+  .topic-header {
     display: flex; align-items: center; gap: 12px;
-    margin: 26px 16px 6px;
-    padding: 14px 18px;
-    border-radius: 18px;
+    padding: 12px 16px;
     color: #fff;
   }
-  .unit-header .u-icon { font-size: 26px; }
-  .unit-header .u-meta { line-height: 1.15; }
-  .unit-header .u-label { font-size: 12px; font-weight: 800; opacity: .85; text-transform: uppercase; letter-spacing: .6px; }
-  .unit-header .u-title { font-size: 20px; font-weight: 800; font-family: 'Baloo 2'; }
+  .topic-header .t-icon { font-size: 26px; line-height: 1; }
+  .topic-header .t-meta { line-height: 1.2; flex: 1; min-width: 0; }
+  .topic-header .t-title { font-size: 19px; font-weight: 800; font-family: 'Baloo 2'; }
+  .topic-header .t-sub {
+    font-size: 11px; font-weight: 800; opacity: .9; margin-top: 2px;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
 
-  .nodes { display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 6px; }
-  .node-row { display: flex; flex-direction: column; align-items: center; position: relative; }
-  .node-row.has-bubble { margin-top: 36px; }
+  .levels-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 22px 12px 16px;
+    gap: 2px;
+  }
+  .level-slot {
+    display: flex; flex-direction: column; align-items: center;
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .level-connector {
+    flex: 0 0 auto;
+    width: 14px; height: 4px;
+    background: var(--grey-l);
+    border-radius: 2px;
+    margin-top: 36px;
+  }
 
-  .node {
-    width: 74px; height: 74px;
+  .level-node {
+    width: 62px; height: 62px;
     border-radius: 50%;
     border: none;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    font-size: 30px;
+    font-size: 26px;
     position: relative;
     transition: transform .08s;
+    background: var(--grey-l);
   }
-  .node:active { transform: translateY(3px); }
-  .node .ring {
-    position: absolute; inset: -6px;
+  .level-node:active { transform: translateY(2px); }
+  .level-node .ring {
+    position: absolute; inset: -5px;
     border-radius: 50%;
     border: 4px solid rgba(0,0,0,.08);
+    pointer-events: none;
   }
-
-  .node.locked {
+  .level-node.locked {
     background: var(--grey-l);
     box-shadow: 0 5px 0 #cfcfcf;
     cursor: not-allowed;
     filter: grayscale(.4);
   }
-  .node.locked .emoji { opacity: .35; }
-  .node.done, .node.current {
-    box-shadow: 0 6px 0 rgba(0,0,0,.18);
-  }
-  .node.done::after {
+  .level-node.locked .emoji { opacity: .35; }
+  .level-node.done, .level-node.current { box-shadow: 0 6px 0 rgba(0,0,0,.18); }
+  .level-node.done::after {
     content: "✓";
     position: absolute; right: -2px; bottom: -2px;
     background: #fff; color: var(--green-d);
-    width: 26px; height: 26px; border-radius: 50%;
-    font-size: 15px; font-weight: 900;
+    width: 22px; height: 22px; border-radius: 50%;
+    font-size: 13px; font-weight: 900;
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 2px 4px rgba(0,0,0,.2);
   }
-  .node.current { animation: bob 1.6s ease-in-out infinite; }
-  .node.current .ring {
+  .level-node.current { animation: bob 1.6s ease-in-out infinite; }
+  .level-node.current .ring {
     border-color: rgba(88,204,2,.45);
     animation: pulse 1.6s ease-in-out infinite;
   }
   @keyframes bob { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-5px);} }
   @keyframes pulse { 0%,100%{ transform: scale(1); opacity: .9;} 50%{ transform: scale(1.12); opacity: .3;} }
-  .node.shake { animation: shake .35s; }
+  .level-node.shake { animation: shake .35s; }
   @keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-7px);} 40%{transform:translateX(7px);} 60%{transform:translateX(-5px);} 80%{transform:translateX(5px);} }
 
+  .level-label {
+    font-size: 10px; font-weight: 900; color: var(--grey);
+    margin-top: 10px; letter-spacing: .6px;
+    text-transform: uppercase;
+  }
+  .level-name {
+    font-size: 11px; font-weight: 700; color: var(--ink);
+    margin-top: 2px;
+    text-align: center;
+    line-height: 1.2;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
   .start-bubble {
-    position: absolute; top: -42px; left: 50%; transform: translateX(-50%);
+    position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
     background: #fff; color: var(--green-d);
-    font-weight: 900; font-size: 13px; letter-spacing: .5px;
-    padding: 7px 14px; border-radius: 12px;
+    font-weight: 900; font-size: 11px; letter-spacing: .5px;
+    padding: 4px 10px; border-radius: 11px;
     border: 2px solid var(--grey-l);
     box-shadow: 0 3px 0 var(--grey-l);
     white-space: nowrap;
+    z-index: 2;
   }
   .start-bubble::after {
     content: ""; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
-    border: 7px solid transparent; border-top-color: #fff;
+    border: 6px solid transparent; border-top-color: #fff;
   }
 
-  .connector { width: 5px; height: 18px; background: var(--grey-l); border-radius: 3px; }
+  .locked-msg {
+    padding: 14px 18px 18px;
+    text-align: center;
+    color: var(--grey);
+    font-weight: 800;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .locked-msg .pct { color: var(--ink); font-weight: 900; }
 
-  .lesson-name { font-size: 12px; font-weight: 800; color: var(--grey); margin-top: 4px; }
-
-  .credit { text-align: center; color: var(--grey); font-size: 12px; font-weight: 700; padding: 10px 0 28px; }
+  .credit { text-align: center; color: var(--grey); font-size: 11px; font-weight: 700; padding: 8px 0 24px; }
 
   /* ---------- lesson screen ---------- */
   .lessonbar {
@@ -272,9 +326,7 @@
     display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start;
   }
   .answer-area.lines { flex-direction: column; flex-wrap: nowrap; }
-  .bank {
-    display: flex; flex-wrap: wrap; gap: 8px;
-  }
+  .bank { display: flex; flex-wrap: wrap; gap: 8px; }
   .bank.lines { flex-direction: column; }
   .chip {
     background: #fff; border: 2px solid var(--grey-l);
@@ -360,7 +412,8 @@
       <div class="stat xp"><span class="ic">💎</span><span id="xpVal">0</span></div>
       <div class="stat crown"><span class="ic">👑</span><span id="crownVal">0</span></div>
       <div class="spacer"></div>
-      <button class="gear" id="resetBtn" title="Reset progress">⚙️</button>
+      <button class="icon-btn" id="soundBtn" title="Toggle sound">🔊</button>
+      <button class="icon-btn" id="resetBtn" title="Reset progress">⚙️</button>
     </div>
     <div class="map-hero">
       <div class="mascot">🐍</div>
@@ -405,131 +458,187 @@
 <script>
 "use strict";
 
-/* ===================== COURSE CONTENT ===================== */
-const COURSE = [
+/* ===================== COURSE CONTENT =====================
+   Six topics. Each has 3 progressive Levels (L1 → L2 → L3).
+   Advanced topics (advanced: true) unlock once L2 has been
+   completed in at least 2 of the four core topics. */
+const TOPICS = [
   {
-    id: "u1", title: "Python Basics", label: "Unit 1", icon: "🐍",
+    id: "vars", title: "Variables", icon: "📦",
     color: "var(--green)", colorD: "var(--green-d)",
-    lessons: [
+    levels: [
       {
-        id: "u1l1", name: "Say Hello", emoji: "👋",
+        id: "vars_l1", name: "Names & Assignment", emoji: "📝",
         exercises: [
-          { type: "mc", q: "Which function displays text on the screen?", codeChoices: true,
-            choices: ["print()", "say()", "show()", "echo()"], answer: "print()" },
-          { type: "tokens", q: "Build a line that prints the word Hello.",
-            tokens: ["print", "(", "\"Hello\"", ")"] },
-          { type: "fill", q: "Complete the code so it prints:  Hello, world!",
-            code: "print(___)", answer: "\"Hello, world!\"", accept: ["'Hello, world!'"] },
-          { type: "mc", q: "What does this code print?", code: "print(\"Python\")",
-            choices: ["Python", "\"Python\"", "print(Python)", "Error"], answer: "Python" },
-          { type: "mc", q: "In Python, text wrapped in quotes is called a...",
-            choices: ["string", "number", "loop", "list"], answer: "string" },
-          { type: "mc", q: "Which line correctly prints the number 7?", codeChoices: true,
-            choices: ["print(7)", "print 7", "print(\"7)", "echo(7)"], answer: "print(7)" }
+          { type: "mc", q: "What does the = sign do in Python?",
+            choices: [
+              "Stores the right-hand value in the variable on the left",
+              "Checks if two values are equal",
+              "Prints a value on screen",
+              "Multiplies two numbers"
+            ],
+            answer: "Stores the right-hand value in the variable on the left" },
+          { type: "fill", q: "Create a variable called count with the value 0.",
+            code: "count = ___", answer: "0" },
+          { type: "mc", q: "Which is a valid Python variable name?", codeChoices: true,
+            choices: ["my_score", "2cool", "my score", "class"],
+            answer: "my_score" },
+          { type: "mc", q: "By convention, how do we name a constant in Python?", codeChoices: true,
+            choices: ["MAX_SPEED", "maxSpeed", "max-speed", "Max_Speed"],
+            answer: "MAX_SPEED" },
+          { type: "mc", q: "Which is the most sensible name for a player's age?", codeChoices: true,
+            choices: ["age", "a", "x1", "thingy"],
+            answer: "age" },
+          { type: "mc", q: "What does this print?",
+            code: "name = \"Sam\"\nname = \"Alex\"\nprint(name)",
+            choices: ["Alex", "Sam", "Sam Alex", "Error"],
+            answer: "Alex" },
+          { type: "tokens", q: "Store the value 99 in a variable called price.",
+            tokens: ["price", "=", "99"] }
         ]
       },
       {
-        id: "u1l2", name: "Variables", emoji: "📦",
+        id: "vars_l2", name: "Data Types", emoji: "🔢",
         exercises: [
-          { type: "mc", q: "What is a variable used for?",
-            choices: ["Storing a value under a name", "Printing text on screen", "Repeating code", "Stopping the program"],
-            answer: "Storing a value under a name" },
-          { type: "fill", q: "Create a variable called age with the value 12.",
-            code: "age = ___", answer: "12" },
-          { type: "mc", q: "What does this code print?", code: "name = \"Sam\"\nprint(name)",
-            choices: ["Sam", "name", "\"Sam\"", "Error"], answer: "Sam" },
-          { type: "tokens", q: "Store the value 100 in a variable called score.",
-            tokens: ["score", "=", "100"] },
-          { type: "mc", q: "What is the value of x after this code runs?", code: "x = 5\nx = x + 3",
-            choices: ["8", "5", "3", "53"], answer: "8" },
-          { type: "fill", q: "Print the value stored in the variable color.",
-            code: "color = \"blue\"\nprint(___)", answer: "color" },
-          { type: "mc", q: "Which of these is a valid variable name?", codeChoices: true,
-            choices: ["my_score", "2cool", "my score", "class"], answer: "my_score" }
-        ]
-      },
-      {
-        id: "u1l3", name: "Numbers & Types", emoji: "🔢",
-        exercises: [
-          { type: "mc", q: "What does this print?", code: "print(3 + 4)",
-            choices: ["7", "34", "3 + 4", "Error"], answer: "7" },
-          { type: "mc", q: "What type of number is 3.14?", codeChoices: true,
+          { type: "mc", q: "What is the type of 42?", codeChoices: true,
+            choices: ["int", "float", "str", "bool"], answer: "int" },
+          { type: "mc", q: "What is the type of 3.14?", codeChoices: true,
             choices: ["float", "int", "str", "bool"], answer: "float" },
-          { type: "mc", q: "What does this print?", code: "print(10 / 2)",
-            choices: ["5.0", "5", "2", "20"], answer: "5.0" },
-          { type: "fill", q: "Complete the code to print the remainder of 17 divided by 5.",
-            code: "print(17 ___ 5)", answer: "%" },
-          { type: "mc", q: "What does this print?", code: "print(\"3\" + \"4\")",
-            choices: ["34", "7", "\"34\"", "Error"], answer: "34" },
-          { type: "mc", q: "What does this print?", code: "print(2 ** 3)",
-            choices: ["8", "6", "9", "23"], answer: "8" },
-          { type: "mc", q: "What does int(\"5\") do?",
-            choices: ["Turns the string \"5\" into the number 5", "Prints 5 on screen",
-                      "Deletes the value 5", "Turns the number 5 into \"5\""],
-            answer: "Turns the string \"5\" into the number 5" }
+          { type: "mc", q: "What is the type of \"hello\"?", codeChoices: true,
+            choices: ["str", "int", "list", "bool"], answer: "str" },
+          { type: "mc", q: "What is the type of True?", codeChoices: true,
+            choices: ["bool", "str", "int", "True"], answer: "bool" },
+          { type: "mc", q: "What does this print?", code: "print(int(\"7\") + 3)",
+            choices: ["10", "73", "\"73\"", "Error"], answer: "10" },
+          { type: "mc", q: "What does this print?", code: "print(str(5) + str(3))",
+            choices: ["53", "8", "\"53\"", "Error"], answer: "53" },
+          { type: "fill", q: "Convert the string \"12\" to a whole number.",
+            code: "n = ___(\"12\")", answer: "int" }
+        ]
+      },
+      {
+        id: "vars_l3", name: "Updating Values", emoji: "✨",
+        exercises: [
+          { type: "mc", q: "What does  x += 1  mean?",
+            choices: [
+              "Add 1 to x and store it back in x",
+              "Check if x equals 1",
+              "Print x plus 1",
+              "Subtract 1 from x"
+            ],
+            answer: "Add 1 to x and store it back in x" },
+          { type: "mc", q: "What does this print?", code: "x = 5\nx += 3\nprint(x)",
+            choices: ["8", "5", "3", "53"], answer: "8" },
+          { type: "fill", q: "Multiply score by 2 using the short form.",
+            code: "score ___ 2", answer: "*=" },
+          { type: "mc", q: "What does this print?", code: "a, b = 1, 2\nprint(b)",
+            choices: ["2", "1", "1, 2", "Error"], answer: "2" },
+          { type: "mc", q: "What does this print?",
+            code: "name = \"Sam\"\nprint(f\"Hi {name}\")",
+            choices: ["Hi Sam", "Hi {name}", "Hi name", "Error"],
+            answer: "Hi Sam" },
+          { type: "fill", q: "Complete the f-string to print:  Score: 7",
+            code: "s = 7\nprint(f\"Score: ___\")", answer: "{s}" },
+          { type: "tokens", q: "Build a line that subtracts 1 from lives (short form).",
+            tokens: ["lives", "-=", "1"] }
         ]
       }
     ]
   },
   {
-    id: "u2", title: "Conditionals", label: "Unit 2", icon: "🤔",
+    id: "select", title: "Selection", icon: "🤔",
     color: "var(--blue)", colorD: "var(--blue-d)",
-    lessons: [
+    levels: [
       {
-        id: "u2l1", name: "True or False", emoji: "⚖️",
-        exercises: [
-          { type: "mc", q: "What does this print?", code: "print(5 > 3)",
-            choices: ["True", "False", "5", "Error"], answer: "True" },
-          { type: "mc", q: "What does this print?", code: "print(10 == 10)",
-            choices: ["True", "False", "10", "0"], answer: "True" },
-          { type: "mc", q: "Which operator checks if two values are equal?", codeChoices: true,
-            choices: ["==", "=", "!=", "=>"], answer: "==" },
-          { type: "mc", q: "What does this print?", code: "print(7 != 7)",
-            choices: ["False", "True", "7", "0"], answer: "False" },
-          { type: "fill", q: "Check whether x is less than or equal to 10.",
-            code: "x = 4\nprint(x ___ 10)", answer: "<=" },
-          { type: "mc", q: "What does this print?", code: "print(3 > 2 and 2 > 5)",
-            choices: ["False", "True", "Error", "None"], answer: "False" },
-          { type: "mc", q: "What does this print?", code: "print(not True)",
-            choices: ["False", "True", "not", "Error"], answer: "False" }
-        ]
-      },
-      {
-        id: "u2l2", name: "Making Decisions", emoji: "🔀",
+        id: "sel_l1", name: "if & else", emoji: "🔀",
         exercises: [
           { type: "mc", q: "Which keyword starts a condition?", codeChoices: true,
             choices: ["if", "when", "check", "test"], answer: "if" },
           { type: "fill", q: "Add the symbol that must end an if line.",
             code: "age = 18\nif age >= 18___\n    print(\"Adult\")", answer: ":" },
+          { type: "mc", q: "How is the body of an if marked in Python?",
+            choices: ["By indentation", "By { curly braces }", "By semicolons", "By the word end"],
+            answer: "By indentation" },
           { type: "mc", q: "What does this print?",
             code: "x = 3\nif x > 5:\n    print(\"big\")\nelse:\n    print(\"small\")",
             choices: ["small", "big", "3", "Nothing"], answer: "small" },
           { type: "mc", q: "What does this print?",
-            code: "n = 0\nif n > 0:\n    print(\"positive\")\nelif n == 0:\n    print(\"zero\")\nelse:\n    print(\"negative\")",
-            choices: ["zero", "positive", "negative", "0"], answer: "zero" },
+            code: "n = 10\nif n == 10:\n    print(\"yes\")",
+            choices: ["yes", "no", "10", "Nothing"], answer: "yes" },
           { type: "order", q: "Arrange the code so it prints \"Pass\".",
             lines: ["score = 70", "if score >= 50:", "    print(\"Pass\")"] },
-          { type: "tokens", q: "Build a line that checks if name equals \"Sam\".",
-            tokens: ["if", "name", "==", "\"Sam\"", ":"] },
-          { type: "mc", q: "What runs when the if condition is False and there is an else?",
-            choices: ["The else block", "The if block", "Nothing at all", "The program stops"],
-            answer: "The else block" }
+          { type: "mc", q: "Which line is WRONG?", codeChoices: true,
+            choices: ["if x > 5", "if x > 5:", "if (x > 5):", "if x >= 5:"],
+            answer: "if x > 5" }
+        ]
+      },
+      {
+        id: "sel_l2", name: "elif", emoji: "🪜",
+        exercises: [
+          { type: "mc", q: "What does elif mean?",
+            choices: [
+              "else if — try another condition",
+              "end of if — close the block",
+              "loop if — repeat the check",
+              "exit if — stop the program"
+            ],
+            answer: "else if — try another condition" },
+          { type: "mc", q: "What does this print?",
+            code: "n = 0\nif n > 0:\n    print(\"positive\")\nelif n == 0:\n    print(\"zero\")\nelse:\n    print(\"negative\")",
+            choices: ["zero", "positive", "negative", "0"], answer: "zero" },
+          { type: "mc", q: "How many elif branches can you have?",
+            choices: ["As many as you want", "Exactly one", "Up to three", "None"],
+            answer: "As many as you want" },
+          { type: "mc", q: "What does this print?",
+            code: "g = 85\nif g >= 90:\n    print(\"A\")\nelif g >= 80:\n    print(\"B\")\nelif g >= 70:\n    print(\"C\")",
+            choices: ["B", "A", "C", "Nothing"], answer: "B" },
+          { type: "tokens", q: "Build the line that handles \"score is exactly 0\".",
+            tokens: ["elif", "score", "==", "0", ":"] },
+          { type: "mc", q: "If the first if condition is True, do later elifs run?",
+            choices: ["No, the rest is skipped", "Yes, all of them run",
+                      "Only the last one runs", "Only the else runs"],
+            answer: "No, the rest is skipped" },
+          { type: "order", q: "Arrange the code so it prints \"medium\" for n = 5.",
+            lines: ["n = 5", "if n > 10:", "    print(\"large\")", "elif n > 1:", "    print(\"medium\")", "else:", "    print(\"small\")"] }
+        ]
+      },
+      {
+        id: "sel_l3", name: "and / or / not", emoji: "🧠",
+        exercises: [
+          { type: "mc", q: "What does  True and False  give?",
+            choices: ["False", "True", "Error", "None"], answer: "False" },
+          { type: "mc", q: "What does  True or False  give?",
+            choices: ["True", "False", "Error", "None"], answer: "True" },
+          { type: "mc", q: "What does  not True  give?",
+            choices: ["False", "True", "not", "Error"], answer: "False" },
+          { type: "mc", q: "What does this print?", code: "print(3 > 2 and 2 > 5)",
+            choices: ["False", "True", "Error", "None"], answer: "False" },
+          { type: "mc", q: "What does this print?",
+            code: "age = 16\nif age >= 13 and age <= 19:\n    print(\"teen\")\nelse:\n    print(\"not teen\")",
+            choices: ["teen", "not teen", "16", "Error"], answer: "teen" },
+          { type: "fill", q: "Pass only if x is positive AND less than 100.",
+            code: "if x > 0 ___ x < 100:", answer: "and" },
+          { type: "mc", q: "What does this print?",
+            code: "x = 0\nif x > 0:\n    if x < 10:\n        print(\"small +\")\nelse:\n    print(\"zero or neg\")",
+            choices: ["zero or neg", "small +", "0", "Nothing"], answer: "zero or neg" }
         ]
       }
     ]
   },
   {
-    id: "u3", title: "Loops", label: "Unit 3", icon: "🔁",
+    id: "loops", title: "Loops", icon: "🔁",
     color: "var(--purple)", colorD: "var(--purple-d)",
-    lessons: [
+    levels: [
       {
-        id: "u3l1", name: "Repeat with for", emoji: "🔁",
+        id: "loops_l1", name: "for & range", emoji: "🔁",
         exercises: [
-          { type: "mc", q: "How many times does this loop run?", code: "for i in range(5):\n    print(\"Hi\")",
+          { type: "mc", q: "How many times does this loop run?",
+            code: "for i in range(5):\n    print(\"Hi\")",
             choices: ["5", "4", "6", "1"], answer: "5" },
           { type: "fill", q: "Make this loop repeat exactly 4 times.",
             code: "for i in range(___):\n    print(\"Go\")", answer: "4" },
-          { type: "mc", q: "What numbers does this print, in order?", code: "for i in range(3):\n    print(i)",
+          { type: "mc", q: "What numbers does this print, in order?",
+            code: "for i in range(3):\n    print(i)",
             choices: ["0, 1, 2", "1, 2, 3", "0, 1, 2, 3", "3"], answer: "0, 1, 2" },
           { type: "mc", q: "What numbers does range(2, 5) produce?",
             choices: ["2, 3, 4", "2, 3, 4, 5", "3, 4, 5", "2, 5"], answer: "2, 3, 4" },
@@ -542,48 +651,83 @@ const COURSE = [
         ]
       },
       {
-        id: "u3l2", name: "Repeat with while", emoji: "♻️",
+        id: "loops_l2", name: "while & break", emoji: "♻️",
         exercises: [
           { type: "mc", q: "A while loop keeps repeating...",
-            choices: ["while its condition is True", "exactly one time", "a random number of times", "only when the file is saved"],
+            choices: ["while its condition is True", "exactly one time",
+                      "a random number of times", "only when the file is saved"],
             answer: "while its condition is True" },
           { type: "mc", q: "What numbers does this print, in order?",
             code: "n = 3\nwhile n > 0:\n    print(n)\n    n = n - 1",
             choices: ["3, 2, 1", "3, 2, 1, 0", "1, 2, 3", "0, 1, 2"], answer: "3, 2, 1" },
           { type: "fill", q: "Keep looping while count is below 5.",
-            code: "count = 0\nwhile count ___ 5:\n    count = count + 1", answer: "<" },
-          { type: "mc", q: "What is wrong with this loop?", code: "n = 1\nwhile n > 0:\n    print(n)",
-            choices: ["It never stops (infinite loop)", "It has a syntax error", "It prints nothing", "It runs only once"],
+            code: "count = 0\nwhile count ___ 5:\n    count += 1", answer: "<" },
+          { type: "mc", q: "What is wrong with this loop?",
+            code: "n = 1\nwhile n > 0:\n    print(n)",
+            choices: ["It never stops (infinite loop)", "It has a syntax error",
+                      "It prints nothing", "It runs only once"],
             answer: "It never stops (infinite loop)" },
           { type: "mc", q: "Which keyword stops a loop early?", codeChoices: true,
             choices: ["break", "stop", "exit", "end"], answer: "break" },
+          { type: "mc", q: "What does this print?",
+            code: "for i in range(10):\n    if i == 3:\n        break\n    print(i)",
+            choices: ["0, 1, 2", "0, 1, 2, 3", "3", "Nothing"], answer: "0, 1, 2" },
           { type: "order", q: "Arrange the code to count down: 2, then 1.",
-            lines: ["n = 2", "while n > 0:", "    print(n)", "    n = n - 1"] },
-          { type: "mc", q: "What does this print?", code: "i = 0\nwhile i < 3:\n    i = i + 1\nprint(i)",
-            choices: ["3", "0", "2", "Nothing"], answer: "3" }
+            lines: ["n = 2", "while n > 0:", "    print(n)", "    n = n - 1"] }
+        ]
+      },
+      {
+        id: "loops_l3", name: "continue & nesting", emoji: "🧩",
+        exercises: [
+          { type: "mc", q: "What does  continue  do inside a loop?",
+            choices: [
+              "Skip to the next iteration of the loop",
+              "Stop the loop completely",
+              "Restart the loop from the very beginning",
+              "Pause the loop for 1 second"
+            ],
+            answer: "Skip to the next iteration of the loop" },
+          { type: "mc", q: "What does this print?",
+            code: "for i in range(4):\n    if i == 2:\n        continue\n    print(i)",
+            choices: ["0, 1, 3", "0, 1, 2, 3", "2", "0, 1"], answer: "0, 1, 3" },
+          { type: "mc", q: "How many times does the inner print run?",
+            code: "for i in range(3):\n    for j in range(2):\n        print(i, j)",
+            choices: ["6", "5", "3", "2"], answer: "6" },
+          { type: "mc", q: "What is the LAST line printed?",
+            code: "for i in range(3):\n    for j in range(2):\n        print(i, j)",
+            choices: ["2 1", "3 2", "2 2", "1 1"], answer: "2 1" },
+          { type: "mc", q: "What does this print?",
+            code: "total = 0\nfor i in range(1, 4):\n    total += i\nprint(total)",
+            choices: ["6", "3", "10", "4"], answer: "6" },
+          { type: "fill", q: "Add each number to total inside the loop.",
+            code: "total = 0\nfor n in range(5):\n    total ___ n", answer: "+=" },
+          { type: "order", q: "Arrange the code to print the total of 1+2+3.",
+            lines: ["total = 0", "for i in range(1, 4):", "    total += i", "print(total)"] }
         ]
       }
     ]
   },
   {
-    id: "u4", title: "Functions", label: "Unit 4", icon: "🛠️",
+    id: "funcs", title: "Functions", icon: "🛠️",
     color: "var(--orange)", colorD: "var(--orange-d)",
-    lessons: [
+    levels: [
       {
-        id: "u4l1", name: "Make a Function", emoji: "🧩",
+        id: "funcs_l1", name: "Define & Call", emoji: "🧰",
         exercises: [
           { type: "mc", q: "Which keyword defines a function?", codeChoices: true,
             choices: ["def", "function", "func", "define"], answer: "def" },
           { type: "fill", q: "Complete the definition of a function called hello.",
             code: "___ hello():\n    print(\"Hello\")", answer: "def" },
-          { type: "mc", q: "What does this code print?", code: "def shout():\n    print(\"HEY\")\nshout()",
+          { type: "mc", q: "What does this code print?",
+            code: "def shout():\n    print(\"HEY\")\nshout()",
             choices: ["HEY", "Nothing", "shout", "Error"], answer: "HEY" },
           { type: "order", q: "Arrange the code to define greet, then call it.",
             lines: ["def greet():", "    print(\"Hi!\")", "greet()"] },
           { type: "tokens", q: "Write a line that calls a function named start.",
             tokens: ["start", "(", ")"] },
           { type: "mc", q: "When does the code INSIDE a function run?",
-            choices: ["When the function is called", "When the file is saved", "As soon as Python starts", "Never"],
+            choices: ["When the function is called", "When the file is saved",
+                      "As soon as Python starts", "Never"],
             answer: "When the function is called" },
           { type: "mc", q: "How many times is \"go\" printed?",
             code: "def run():\n    print(\"go\")\nrun()\nrun()",
@@ -591,32 +735,223 @@ const COURSE = [
         ]
       },
       {
-        id: "u4l2", name: "Inputs & Outputs", emoji: "📥",
+        id: "funcs_l2", name: "Parameters & return", emoji: "📥",
         exercises: [
           { type: "mc", q: "A value you pass into a function is called a...",
             choices: ["argument", "loop", "backdrop", "comment"], answer: "argument" },
           { type: "fill", q: "Give this function a parameter called name.",
             code: "def greet(___):\n    print(\"Hi\", name)", answer: "name" },
-          { type: "mc", q: "What does this print?", code: "def add(a, b):\n    return a + b\nprint(add(2, 3))",
+          { type: "mc", q: "What does this print?",
+            code: "def add(a, b):\n    return a + b\nprint(add(2, 3))",
             choices: ["5", "23", "a + b", "Error"], answer: "5" },
           { type: "mc", q: "What does the return keyword do?",
             choices: ["Sends a value back from the function", "Prints a value on screen",
                       "Stops the whole program", "Defines a new function"],
             answer: "Sends a value back from the function" },
-          { type: "mc", q: "What does this print?", code: "def double(x):\n    return x * 2\nprint(double(4))",
+          { type: "mc", q: "What does this print?",
+            code: "def double(x):\n    return x * 2\nprint(double(4))",
             choices: ["8", "6", "4", "42"], answer: "8" },
           { type: "tokens", q: "Build a statement that returns the value total.",
             tokens: ["return", "total"] },
-          { type: "order", q: "Arrange the code to define square, then print the square of 3.",
+          { type: "order", q: "Arrange the code to define square, then print square(3).",
             lines: ["def square(n):", "    return n * n", "print(square(3))"] }
+        ]
+      },
+      {
+        id: "funcs_l3", name: "Defaults & Scope", emoji: "🎯",
+        exercises: [
+          { type: "mc", q: "What does this print?",
+            code: "def greet(name=\"friend\"):\n    print(\"Hi\", name)\ngreet()",
+            choices: ["Hi friend", "Hi name", "Hi", "Error"], answer: "Hi friend" },
+          { type: "mc", q: "What does this print?",
+            code: "def add(a, b=10):\n    return a + b\nprint(add(5))",
+            choices: ["15", "10", "5", "Error"], answer: "15" },
+          { type: "mc", q: "What does this print?",
+            code: "def add(a, b=10):\n    return a + b\nprint(add(5, 2))",
+            choices: ["7", "15", "12", "Error"], answer: "7" },
+          { type: "fill", q: "Give count a default value of 0.",
+            code: "def tally(count=___):\n    print(count)", answer: "0" },
+          { type: "mc", q: "Variables created INSIDE a function are...",
+            choices: ["only usable inside that function (local)",
+                      "available everywhere in the program",
+                      "automatically saved to a file",
+                      "always equal to None"],
+            answer: "only usable inside that function (local)" },
+          { type: "mc", q: "What happens here?",
+            code: "def f():\n    x = 5\nf()\nprint(x)",
+            choices: ["Error: x is not defined outside the function",
+                      "Prints 5", "Prints None", "Prints 0"],
+            answer: "Error: x is not defined outside the function" },
+          { type: "tokens", q: "Call greet with the name \"Sam\" and the age 12.",
+            tokens: ["greet", "(", "\"Sam\"", ",", "12", ")"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "strings", title: "String Manipulation", icon: "🧵",
+    color: "var(--red)", colorD: "var(--red-d)",
+    advanced: true,
+    levels: [
+      {
+        id: "str_l1", name: "Build & Index", emoji: "🔤",
+        exercises: [
+          { type: "mc", q: "What does this print?", code: "print(\"Hi\" + \"!\")",
+            choices: ["Hi!", "Hi !", "\"Hi!\"", "Error"], answer: "Hi!" },
+          { type: "mc", q: "What does this print?", code: "print(len(\"hello\"))",
+            choices: ["5", "4", "6", "hello"], answer: "5" },
+          { type: "mc", q: "What does this print?",
+            code: "s = \"Python\"\nprint(s[0])",
+            choices: ["P", "Python", "y", "0"], answer: "P" },
+          { type: "mc", q: "What does this print?",
+            code: "s = \"Python\"\nprint(s[-1])",
+            choices: ["n", "P", "Python", "Error"], answer: "n" },
+          { type: "fill", q: "Print the first letter of word.",
+            code: "word = \"cat\"\nprint(word[___])", answer: "0" },
+          { type: "mc", q: "What does this print?", code: "print(\"x\" * 3)",
+            choices: ["xxx", "3", "x*3", "x x x"], answer: "xxx" },
+          { type: "tokens", q: "Build a line that joins greeting and name with a space between them.",
+            tokens: ["print", "(", "greeting", "+", "\" \"", "+", "name", ")"] }
+        ]
+      },
+      {
+        id: "str_l2", name: "Slicing", emoji: "✂️",
+        exercises: [
+          { type: "mc", q: "What does this print?", code: "print(\"Python\"[0:3])",
+            choices: ["Pyt", "Pyth", "yth", "Python"], answer: "Pyt" },
+          { type: "mc", q: "What does this print?", code: "print(\"hello\"[2:])",
+            choices: ["llo", "hel", "ll", "lo"], answer: "llo" },
+          { type: "mc", q: "What does this print?", code: "print(\"hello\"[:3])",
+            choices: ["hel", "llo", "lo", "h"], answer: "hel" },
+          { type: "fill", q: "Slice to get \"ell\" from \"hello\".",
+            code: "print(\"hello\"[___])", answer: "1:4" },
+          { type: "mc", q: "What does this print?", code: "print(\"abcdef\"[-2:])",
+            choices: ["ef", "de", "f", "ab"], answer: "ef" },
+          { type: "mc", q: "What does this print?", code: "print(\"abc\"[::-1])",
+            choices: ["cba", "abc", "c", "Error"], answer: "cba" },
+          { type: "mc", q: "What does this print?",
+            code: "s = \"data\"\nprint(s[1:3])",
+            choices: ["at", "dat", "da", "ta"], answer: "at" }
+        ]
+      },
+      {
+        id: "str_l3", name: "Methods & in", emoji: "🛠️",
+        exercises: [
+          { type: "mc", q: "What does this print?", code: "print(\"hello\".upper())",
+            choices: ["HELLO", "hello", "Hello", "Error"], answer: "HELLO" },
+          { type: "mc", q: "What does this print?", code: "print(\"HI\".lower())",
+            choices: ["hi", "HI", "Hi", "Error"], answer: "hi" },
+          { type: "mc", q: "What does this print?", code: "print(\"  hi  \".strip())",
+            choices: ["hi", "  hi  ", "hi  ", "  hi"], answer: "hi" },
+          { type: "mc", q: "What does this print?",
+            code: "print(\"a,b,c\".split(\",\"))",
+            choices: ["['a', 'b', 'c']", "abc", "a b c", "Error"],
+            answer: "['a', 'b', 'c']" },
+          { type: "mc", q: "What does this print?",
+            code: "print(\"-\".join([\"a\", \"b\", \"c\"]))",
+            choices: ["a-b-c", "abc", "['a','b','c']", "a, b, c"],
+            answer: "a-b-c" },
+          { type: "mc", q: "What does this print?",
+            code: "print(\"cat\" in \"concatenate\")",
+            choices: ["True", "False", "cat", "Error"], answer: "True" },
+          { type: "fill", q: "Replace \"Hi\" with \"Hello\" in the greeting.",
+            code: "g = \"Hi Sam\"\nprint(g.replace(\"Hi\", ___))",
+            answer: "\"Hello\"", accept: ["'Hello'"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "lists", title: "Lists", icon: "📋",
+    color: "var(--teal)", colorD: "var(--teal-d)",
+    advanced: true,
+    levels: [
+      {
+        id: "lists_l1", name: "Create & Index", emoji: "📋",
+        exercises: [
+          { type: "mc", q: "What does this print?",
+            code: "nums = [1, 2, 3]\nprint(nums[0])",
+            choices: ["1", "0", "2", "[1, 2, 3]"], answer: "1" },
+          { type: "mc", q: "What does this print?", code: "print(len([4, 5, 6]))",
+            choices: ["3", "4", "15", "6"], answer: "3" },
+          { type: "mc", q: "What does this print?",
+            code: "colors = [\"red\", \"green\", \"blue\"]\nprint(colors[2])",
+            choices: ["blue", "green", "red", "2"], answer: "blue" },
+          { type: "mc", q: "Which creates a list of three numbers?", codeChoices: true,
+            choices: ["[1, 2, 3]", "(1, 2, 3)", "{1, 2, 3}", "<1, 2, 3>"],
+            answer: "[1, 2, 3]" },
+          { type: "mc", q: "What does this print?",
+            code: "letters = [\"a\", \"b\", \"c\"]\nprint(letters[-1])",
+            choices: ["c", "a", "b", "Error"], answer: "c" },
+          { type: "mc", q: "What is the index of the FIRST item in a list?",
+            choices: ["0", "1", "-1", "first"], answer: "0" },
+          { type: "fill", q: "Get the second item from scores.",
+            code: "scores = [10, 20, 30]\nprint(scores[___])", answer: "1" }
+        ]
+      },
+      {
+        id: "lists_l2", name: "Modify", emoji: "✏️",
+        exercises: [
+          { type: "mc", q: "What does this print?",
+            code: "nums = [1, 2]\nnums.append(3)\nprint(nums)",
+            choices: ["[1, 2, 3]", "[3, 1, 2]", "[1, 2]", "Error"],
+            answer: "[1, 2, 3]" },
+          { type: "mc", q: "What does this print?",
+            code: "nums = [1, 2, 3]\nnums.pop()\nprint(nums)",
+            choices: ["[1, 2]", "[2, 3]", "[1, 2, 3]", "3"],
+            answer: "[1, 2]" },
+          { type: "fill", q: "Change the first item of nums to 99.",
+            code: "nums = [1, 2, 3]\nnums[___] = 99", answer: "0" },
+          { type: "mc", q: "What does this print?", code: "print([1, 2, 3, 4][1:3])",
+            choices: ["[2, 3]", "[1, 2]", "[2, 3, 4]", "[3, 4]"],
+            answer: "[2, 3]" },
+          { type: "tokens", q: "Add 5 to the end of the list scores.",
+            tokens: ["scores", ".", "append", "(", "5", ")"] },
+          { type: "mc", q: "What does this print?",
+            code: "nums = [1, 2, 3]\nnums[0] = 10\nprint(nums)",
+            choices: ["[10, 2, 3]", "[1, 2, 10]", "[10]", "Error"],
+            answer: "[10, 2, 3]" },
+          { type: "mc", q: "How many items are in  [ ] ?",
+            choices: ["0", "1", "None", "Error"], answer: "0" }
+        ]
+      },
+      {
+        id: "lists_l3", name: "Iterate & Test", emoji: "🔁",
+        exercises: [
+          { type: "mc", q: "What does this print?",
+            code: "for x in [1, 2, 3]:\n    print(x)",
+            choices: ["1, then 2, then 3", "[1, 2, 3]", "x x x", "0, 1, 2"],
+            answer: "1, then 2, then 3" },
+          { type: "mc", q: "What does this print?", code: "print(3 in [1, 2, 3])",
+            choices: ["True", "False", "3", "Error"], answer: "True" },
+          { type: "mc", q: "What does this print?", code: "print(5 in [1, 2, 3])",
+            choices: ["False", "True", "5", "Error"], answer: "False" },
+          { type: "mc", q: "What does this print?",
+            code: "nums = [3, 1, 2]\nnums.sort()\nprint(nums)",
+            choices: ["[1, 2, 3]", "[3, 2, 1]", "[3, 1, 2]", "Error"],
+            answer: "[1, 2, 3]" },
+          { type: "mc", q: "What does this print?",
+            code: "nums = [1, 2, 3]\nnums.reverse()\nprint(nums)",
+            choices: ["[3, 2, 1]", "[1, 2, 3]", "[2, 1, 3]", "Error"],
+            answer: "[3, 2, 1]" },
+          { type: "mc", q: "What does this print?",
+            code: "total = 0\nfor n in [1, 2, 3]:\n    total += n\nprint(total)",
+            choices: ["6", "3", "123", "0"], answer: "6" },
+          { type: "order", q: "Arrange the code to print the sum of [1, 2, 3].",
+            lines: ["total = 0", "for n in [1, 2, 3]:", "    total += n", "print(total)"] }
         ]
       }
     ]
   }
 ];
 
+const CORE_TOPIC_IDS = ["vars", "select", "loops", "funcs"];
+const ADVANCED_UNLOCK_THRESHOLD = 2;  // L2 cleared in this many core topics
+
 /* ===================== STATE & STORAGE ===================== */
-const STORAGE_KEY = "pylingo_v1";
+const STORAGE_KEY = "pylingo_v2";
+const LEGACY_KEY  = "pylingo_v1";
+const SOUND_KEY   = "pylingo_sound";
 const HEARTS_PER_LESSON = 5;
 
 let state = {
@@ -626,14 +961,37 @@ let state = {
   lastActive: null    // "YYYY-MM-DD"
 };
 
+let audioEnabled = true;
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) state = Object.assign(state, JSON.parse(raw));
+    if (raw) {
+      state = Object.assign(state, JSON.parse(raw));
+    } else {
+      // One-time migration from v1: keep XP, streak, lastActive; drop
+      // completed (lesson IDs changed in v2).
+      const legacy = localStorage.getItem(LEGACY_KEY);
+      if (legacy) {
+        const old = JSON.parse(legacy);
+        state.xp = old.xp || 0;
+        state.streak = old.streak || 0;
+        state.lastActive = old.lastActive || null;
+        saveState();
+      }
+    }
   } catch (e) { /* ignore corrupt data */ }
+
+  try {
+    const s = localStorage.getItem(SOUND_KEY);
+    if (s != null) audioEnabled = JSON.parse(s);
+  } catch (e) {}
 }
 function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+function saveSound() {
+  try { localStorage.setItem(SOUND_KEY, JSON.stringify(audioEnabled)); } catch (e) {}
 }
 
 /* ---- dates / streak ---- */
@@ -675,19 +1033,81 @@ function shuffle(arr) {
 function arraysEqual(a, b) {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }
-function flatLessons() {
-  const out = [];
-  COURSE.forEach(u => u.lessons.forEach(l => out.push({ unit: u, lesson: l })));
-  return out;
+
+function findLesson(lessonId) {
+  for (const t of TOPICS)
+    for (const l of t.levels)
+      if (l.id === lessonId) return { topic: t, level: l };
+  return null;
 }
-function lessonState(lessonId) {
-  if (state.completed[lessonId]) return "done";
-  for (const f of flatLessons()) {
-    if (!state.completed[f.lesson.id]) {
-      return f.lesson.id === lessonId ? "current" : "locked";
+
+function coreL2Cleared() {
+  let n = 0;
+  for (const tid of CORE_TOPIC_IDS) {
+    const t = TOPICS.find(x => x.id === tid);
+    if (t && state.completed[t.levels[1].id]) n++;
+  }
+  return n;
+}
+function topicUnlocked(topic) {
+  if (!topic.advanced) return true;
+  return coreL2Cleared() >= ADVANCED_UNLOCK_THRESHOLD;
+}
+function levelState(topic, idx) {
+  if (!topicUnlocked(topic)) return "locked";
+  const level = topic.levels[idx];
+  if (state.completed[level.id]) return "done";
+  for (let i = 0; i < topic.levels.length; i++) {
+    if (!state.completed[topic.levels[i].id]) {
+      return i === idx ? "current" : "locked";
     }
   }
   return "locked";
+}
+
+/* ===================== SOUND ===================== */
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try {
+      const Ctor = window.AudioContext || window.webkitAudioContext;
+      if (Ctor) audioCtx = new Ctor();
+    } catch (e) { return; }
+  }
+  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+}
+function playTone(freq, duration, when, type, gain) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const env = audioCtx.createGain();
+  osc.type = type || "sine";
+  osc.frequency.value = freq;
+  osc.connect(env);
+  env.connect(audioCtx.destination);
+  const t = audioCtx.currentTime + (when || 0);
+  const g = gain != null ? gain : 0.15;
+  env.gain.setValueAtTime(0.0001, t);
+  env.gain.linearRampToValueAtTime(g, t + 0.012);
+  env.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+  osc.start(t);
+  osc.stop(t + duration + 0.03);
+}
+function playCorrect() {
+  if (!audioEnabled) return;
+  initAudio();
+  if (!audioCtx) return;
+  // Bright ascending triad: C5, E5, G5
+  playTone(523.25, 0.14, 0.00, "sine", 0.18);
+  playTone(659.25, 0.16, 0.08, "sine", 0.18);
+  playTone(783.99, 0.22, 0.17, "sine", 0.20);
+}
+function playWrong() {
+  if (!audioEnabled) return;
+  initAudio();
+  if (!audioCtx) return;
+  // Mellow descending "uh-oh"
+  playTone(311.13, 0.18, 0.00, "square", 0.10);
+  playTone(246.94, 0.26, 0.13, "square", 0.10);
 }
 
 /* ===================== SCREENS ===================== */
@@ -706,38 +1126,48 @@ function renderMap() {
   const path = document.getElementById("path");
   path.innerHTML = "";
 
-  const offsets = [0, 36, 52, 36, 0, -36, -52, -36];
-  let nodeCounter = 0;
+  TOPICS.forEach(topic => {
+    const unlocked = topicUnlocked(topic);
+    const card = el("div", "topic-card" + (unlocked ? "" : " locked-topic"));
+    card.style.borderColor = unlocked ? topic.color : "var(--grey-l)";
 
-  COURSE.forEach(unit => {
-    const header = el("div", "unit-header");
-    header.style.background = unit.color;
+    const header = el("div", "topic-header");
+    if (unlocked) header.style.background = topic.color;
+    const subText = unlocked
+      ? `Level 1 · Level 2 · Level 3`
+      : `Locked`;
     header.innerHTML =
-      `<span class="u-icon">${unit.icon}</span>
-       <div class="u-meta">
-         <div class="u-label">${esc(unit.label)}</div>
-         <div class="u-title">${esc(unit.title)}</div>
+      `<span class="t-icon">${unlocked ? topic.icon : "🔒"}</span>
+       <div class="t-meta">
+         <div class="t-title">${esc(topic.title)}</div>
+         <div class="t-sub">${subText}</div>
        </div>`;
-    path.appendChild(header);
+    card.appendChild(header);
 
-    const nodes = el("div", "nodes");
-    unit.lessons.forEach((lesson, li) => {
-      const st = lessonState(lesson.id);
-      const row = el("div", "node-row");
-      row.style.transform = `translateX(${offsets[nodeCounter % offsets.length]}px)`;
-      nodeCounter++;
+    if (!unlocked) {
+      const cleared = coreL2Cleared();
+      card.appendChild(el("div", "locked-msg",
+        `Finish <span class="pct">Level 2</span> in <span class="pct">${ADVANCED_UNLOCK_THRESHOLD}</span> topics to unlock.<br>` +
+        `Cleared so far: <span class="pct">${cleared}/${ADVANCED_UNLOCK_THRESHOLD}</span>`));
+      path.appendChild(card);
+      return;
+    }
 
-      if (li > 0) nodes.appendChild(el("div", "connector"));
+    const row = el("div", "levels-row");
+    topic.levels.forEach((level, idx) => {
+      if (idx > 0) row.appendChild(el("div", "level-connector"));
+
+      const slot = el("div", "level-slot");
+      const st = levelState(topic, idx);
 
       if (st === "current") {
-        row.classList.add("has-bubble");
-        row.appendChild(el("div", "start-bubble", "START"));
+        slot.appendChild(el("div", "start-bubble", "START"));
       }
 
-      const node = el("button", "node " + st);
-      node.style.background = (st === "locked") ? "" : unit.color;
-      node.innerHTML = `<span class="ring"></span><span class="emoji">${lesson.emoji}</span>`;
-      node.title = lesson.name;
+      const node = el("button", "level-node " + st);
+      if (st !== "locked") node.style.background = topic.color;
+      node.innerHTML = `<span class="ring"></span><span class="emoji">${level.emoji}</span>`;
+      node.title = level.name;
       node.addEventListener("click", () => {
         if (st === "locked") {
           node.classList.remove("shake");
@@ -745,35 +1175,31 @@ function renderMap() {
           node.classList.add("shake");
           return;
         }
-        startLesson(lesson.id);
+        startLesson(level.id);
       });
-      row.appendChild(node);
-      row.appendChild(el("div", "lesson-name", esc(lesson.name)));
-      nodes.appendChild(row);
+      slot.appendChild(node);
+      slot.appendChild(el("div", "level-label", "Level " + (idx + 1)));
+      slot.appendChild(el("div", "level-name", esc(level.name)));
+      row.appendChild(slot);
     });
-    path.appendChild(nodes);
+    card.appendChild(row);
+    path.appendChild(card);
   });
 }
 
 /* ===================== LESSON SESSION ===================== */
 let session = null;
 
-function findLesson(lessonId) {
-  for (const u of COURSE)
-    for (const l of u.lessons)
-      if (l.id === lessonId) return { unit: u, lesson: l };
-  return null;
-}
-
 function startLesson(lessonId) {
   const found = findLesson(lessonId);
   if (!found) return;
+  initAudio();  // first user gesture inside the app — prime audio context
   session = {
     lessonId,
-    unit: found.unit,
-    lesson: found.lesson,
-    remaining: found.lesson.exercises.slice(),   // exercises still to answer correctly
-    total: found.lesson.exercises.length,
+    topic: found.topic,
+    level: found.level,
+    remaining: found.level.exercises.slice(),
+    total: found.level.exercises.length,
     correctCount: 0,
     hearts: HEARTS_PER_LESSON,
     mistakes: 0,
@@ -964,7 +1390,6 @@ function checkAnswer() {
   const correct = isCorrect(ex);
   session.lastCorrect = correct;
 
-  // mark choices visually for mc
   if (ex.type === "mc") {
     document.querySelectorAll(".choice").forEach(c => {
       if (c.dataset.value === ex.answer) c.classList.add("right");
@@ -972,10 +1397,13 @@ function checkAnswer() {
     });
   }
 
-  if (!correct) {
+  if (correct) {
+    playCorrect();
+  } else {
     session.hearts--;
     session.mistakes++;
     renderHearts();
+    playWrong();
   }
   renderFooterFeedback(correct, ex);
 }
@@ -1009,7 +1437,7 @@ function continueLesson() {
     session.correctCount++;
   } else {
     if (session.hearts <= 0) { failLesson(); return; }
-    session.remaining.push(ex);   // re-queue the missed exercise
+    session.remaining.push(ex);
   }
   renderProgress();
 
@@ -1023,9 +1451,9 @@ function finishLesson() {
   const perfect = session.mistakes === 0;
   let earned;
   if (alreadyDone) {
-    earned = 5;                       // replay / practice
+    earned = 5;
   } else {
-    earned = 10 + (perfect ? 5 : 0);  // base + perfect bonus
+    earned = 10 + (perfect ? 5 : 0);
   }
   state.xp += earned;
   state.completed[session.lessonId] = true;
@@ -1040,8 +1468,8 @@ function showCompleteScreen(earned, perfect, replay) {
   inner.innerHTML = "";
 
   inner.appendChild(el("div", "big-emoji", "🐍"));
-  inner.appendChild(el("h2", null, replay ? "Practice complete!" : "Lesson complete!"));
-  inner.appendChild(el("div", "sub", esc(session.unit.title) + " · " + esc(session.lesson.name)));
+  inner.appendChild(el("h2", null, replay ? "Practice complete!" : "Level complete!"));
+  inner.appendChild(el("div", "sub", esc(session.topic.title) + " · " + esc(session.level.name)));
   if (perfect && !replay) inner.appendChild(el("div", "perfect-badge", "⭐ Perfect lesson"));
 
   const row = el("div", "reward-row");
@@ -1067,7 +1495,7 @@ function failLesson() {
 
 /* ---- confetti ---- */
 function launchConfetti(container) {
-  const colors = ["#58cc02", "#1cb0f6", "#ce82ff", "#ff9600", "#ffc800", "#ff4b4b"];
+  const colors = ["#58cc02", "#1cb0f6", "#ce82ff", "#ff9600", "#ffc800", "#ff4b4b", "#14b8a6"];
   for (let i = 0; i < 36; i++) {
     const c = el("div", "confetti");
     c.style.left = Math.random() * 100 + "%";
@@ -1096,6 +1524,11 @@ document.addEventListener("keydown", e => {
 });
 
 /* ===================== TOP-LEVEL CONTROLS ===================== */
+function syncSoundButton() {
+  const btn = document.getElementById("soundBtn");
+  if (btn) btn.textContent = audioEnabled ? "🔊" : "🔇";
+}
+
 document.getElementById("quitBtn").addEventListener("click", () => {
   if (session && session.correctCount < session.total) {
     if (!confirm("Quit lesson? Your progress in this lesson won't be saved.")) return;
@@ -1118,9 +1551,16 @@ document.getElementById("resetBtn").addEventListener("click", () => {
   saveState();
   renderMap();
 });
+document.getElementById("soundBtn").addEventListener("click", () => {
+  audioEnabled = !audioEnabled;
+  saveSound();
+  syncSoundButton();
+  if (audioEnabled) { initAudio(); playCorrect(); }
+});
 
 /* ===================== INIT ===================== */
 loadState();
+syncSoundButton();
 renderMap();
 showScreen("mapScreen");
 </script>
