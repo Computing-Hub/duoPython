@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PyLingo — Learn Python the fun way</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --green: #58cc02;
+    --green-d: #58a700;
+    --green-l: #d7ffb8;
+    --blue: #1cb0f6;
+    --blue-d: #1899d6;
+    --purple: #ce82ff;
+    --purple-d: #a568cc;
+    --orange: #ff9600;
+    --orange-d: #cc7800;
+    --red: #ff4b4b;
+    --red-d: #ea2b2b;
+    --red-l: #ffdfe0;
+    --gold: #ffc800;
+    --ink: #3c3c3c;
+    --grey: #afafaf;
+    --grey-l: #e5e5e5;
+    --grey-bg: #f7f7f7;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', system-ui, sans-serif;
+    background: var(--grey-bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    background: #fff;
+    min-height: 100vh;
+    position: relative;
+    box-shadow: 0 0 40px rgba(0,0,0,.06);
+  }
+
+  .screen { display: flex; flex-direction: column; min-height: 100vh; }
+  .hidden { display: none !important; }
+
+  h1, h2, h3, .display { font-family: 'Baloo 2', 'Nunito', sans-serif; }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    border: none;
+    border-radius: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    padding: 14px 18px;
+    cursor: pointer;
+    color: #fff;
+    background: var(--green);
+    box-shadow: 0 4px 0 var(--green-d);
+    transition: transform .05s, box-shadow .05s, filter .1s;
+    user-select: none;
+  }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--green-d); }
+  .btn.blue { background: var(--blue); box-shadow: 0 4px 0 var(--blue-d); }
+  .btn.blue:active { box-shadow: 0 2px 0 var(--blue-d); }
+  .btn.red { background: var(--red); box-shadow: 0 4px 0 var(--red-d); }
+  .btn.red:active { box-shadow: 0 2px 0 var(--red-d); }
+  .btn.ghost {
+    background: #fff; color: var(--blue);
+    box-shadow: 0 2px 0 var(--grey-l); border: 2px solid var(--grey-l);
+  }
+  .btn.ghost:active { transform: translateY(2px); box-shadow: 0 0 0 var(--grey-l); }
+  .btn[disabled] {
+    background: var(--grey-l); color: var(--grey);
+    box-shadow: 0 4px 0 #cfcfcf; cursor: not-allowed;
+  }
+  .btn[disabled]:active { transform: none; box-shadow: 0 4px 0 #cfcfcf; }
+  .btn.wide { width: 100%; }
+
+  /* ---------- map / topbar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px;
+    background: #fff;
+    border-bottom: 2px solid var(--grey-l);
+  }
+  .stat { display: flex; align-items: center; gap: 5px; font-weight: 900; font-size: 17px; }
+  .stat .ic { font-size: 19px; }
+  .stat.streak { color: var(--gold); }
+  .stat.xp { color: var(--blue); }
+  .stat.crown { color: var(--orange); }
+  .topbar .spacer { flex: 1; }
+  .gear {
+    background: none; border: none; cursor: pointer;
+    font-size: 20px; opacity: .5; padding: 4px;
+  }
+  .gear:hover { opacity: 1; }
+
+  .map-hero {
+    text-align: center;
+    padding: 26px 20px 8px;
+  }
+  .map-hero .mascot { font-size: 56px; line-height: 1; }
+  .map-hero h1 { font-size: 30px; color: var(--green-d); margin-top: 6px; }
+  .map-hero p { color: var(--grey); font-weight: 700; margin-top: 2px; }
+
+  #path { padding: 10px 0 40px; }
+
+  .unit-header {
+    display: flex; align-items: center; gap: 12px;
+    margin: 26px 16px 6px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    color: #fff;
+  }
+  .unit-header .u-icon { font-size: 26px; }
+  .unit-header .u-meta { line-height: 1.15; }
+  .unit-header .u-label { font-size: 12px; font-weight: 800; opacity: .85; text-transform: uppercase; letter-spacing: .6px; }
+  .unit-header .u-title { font-size: 20px; font-weight: 800; font-family: 'Baloo 2'; }
+
+  .nodes { display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 6px; }
+  .node-row { display: flex; flex-direction: column; align-items: center; position: relative; }
+  .node-row.has-bubble { margin-top: 36px; }
+
+  .node {
+    width: 74px; height: 74px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    position: relative;
+    transition: transform .08s;
+  }
+  .node:active { transform: translateY(3px); }
+  .node .ring {
+    position: absolute; inset: -6px;
+    border-radius: 50%;
+    border: 4px solid rgba(0,0,0,.08);
+  }
+
+  .node.locked {
+    background: var(--grey-l);
+    box-shadow: 0 5px 0 #cfcfcf;
+    cursor: not-allowed;
+    filter: grayscale(.4);
+  }
+  .node.locked .emoji { opacity: .35; }
+  .node.done, .node.current {
+    box-shadow: 0 6px 0 rgba(0,0,0,.18);
+  }
+  .node.done::after {
+    content: "✓";
+    position: absolute; right: -2px; bottom: -2px;
+    background: #fff; color: var(--green-d);
+    width: 26px; height: 26px; border-radius: 50%;
+    font-size: 15px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,.2);
+  }
+  .node.current { animation: bob 1.6s ease-in-out infinite; }
+  .node.current .ring {
+    border-color: rgba(88,204,2,.45);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-5px);} }
+  @keyframes pulse { 0%,100%{ transform: scale(1); opacity: .9;} 50%{ transform: scale(1.12); opacity: .3;} }
+  .node.shake { animation: shake .35s; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-7px);} 40%{transform:translateX(7px);} 60%{transform:translateX(-5px);} 80%{transform:translateX(5px);} }
+
+  .start-bubble {
+    position: absolute; top: -42px; left: 50%; transform: translateX(-50%);
+    background: #fff; color: var(--green-d);
+    font-weight: 900; font-size: 13px; letter-spacing: .5px;
+    padding: 7px 14px; border-radius: 12px;
+    border: 2px solid var(--grey-l);
+    box-shadow: 0 3px 0 var(--grey-l);
+    white-space: nowrap;
+  }
+  .start-bubble::after {
+    content: ""; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+    border: 7px solid transparent; border-top-color: #fff;
+  }
+
+  .connector { width: 5px; height: 18px; background: var(--grey-l); border-radius: 3px; }
+
+  .lesson-name { font-size: 12px; font-weight: 800; color: var(--grey); margin-top: 4px; }
+
+  .credit { text-align: center; color: var(--grey); font-size: 12px; font-weight: 700; padding: 10px 0 28px; }
+
+  /* ---------- lesson screen ---------- */
+  .lessonbar {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+  }
+  .x-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 26px; color: var(--grey); font-weight: 900;
+    line-height: 1; padding: 0 4px;
+  }
+  .x-btn:hover { color: var(--ink); }
+  .progress-track {
+    flex: 1; height: 16px; background: var(--grey-l);
+    border-radius: 10px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--green);
+    border-radius: 10px; width: 0%;
+    transition: width .35s ease;
+    box-shadow: inset 0 4px 0 rgba(255,255,255,.35);
+  }
+  .hearts { display: flex; gap: 2px; font-size: 18px; }
+  .hearts .h.empty { filter: grayscale(1); opacity: .35; }
+
+  #exArea { flex: 1; padding: 20px 22px; }
+  .ex-kicker {
+    font-size: 13px; font-weight: 900; text-transform: uppercase;
+    letter-spacing: .8px; color: var(--grey); margin-bottom: 8px;
+  }
+  .ex-prompt { font-size: 22px; font-weight: 800; line-height: 1.3; margin-bottom: 18px; }
+
+  pre.code {
+    background: #2b2b3a; color: #f5f5f7;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 15px; line-height: 1.55;
+    padding: 16px 18px; border-radius: 14px;
+    margin-bottom: 20px; overflow-x: auto;
+    white-space: pre;
+  }
+  pre.code .blank-input {
+    font-family: inherit; font-size: 15px;
+    background: #1d1d28; color: var(--gold);
+    border: 2px solid #4a4a5e; border-radius: 7px;
+    padding: 1px 6px; min-width: 4ch;
+    outline: none;
+  }
+  pre.code .blank-input:focus { border-color: var(--blue); }
+
+  /* multiple choice */
+  .choices { display: flex; flex-direction: column; gap: 11px; }
+  .choice {
+    text-align: left; background: #fff;
+    border: 2px solid var(--grey-l);
+    box-shadow: 0 3px 0 var(--grey-l);
+    border-radius: 14px; padding: 14px 16px;
+    font-weight: 700; font-size: 16px; cursor: pointer;
+    color: var(--ink); transition: background .08s;
+  }
+  .choice:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--grey-l); }
+  .choice.mono { font-family: 'SF Mono','Consolas',monospace; }
+  .choice.selected {
+    border-color: var(--blue); box-shadow: 0 3px 0 var(--blue-d);
+    background: #ddf4ff; color: var(--blue-d);
+  }
+  .choice.right { border-color: var(--green); box-shadow: 0 3px 0 var(--green-d); background: var(--green-l); color: var(--green-d); }
+  .choice.wrong { border-color: var(--red); box-shadow: 0 3px 0 var(--red-d); background: var(--red-l); color: var(--red-d); }
+
+  /* build (tokens / order) */
+  .answer-area {
+    min-height: 56px; border-bottom: 2px dashed var(--grey-l);
+    padding: 8px 4px 14px; margin-bottom: 16px;
+    display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start;
+  }
+  .answer-area.lines { flex-direction: column; flex-wrap: nowrap; }
+  .bank {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .bank.lines { flex-direction: column; }
+  .chip {
+    background: #fff; border: 2px solid var(--grey-l);
+    box-shadow: 0 3px 0 var(--grey-l);
+    border-radius: 12px; padding: 9px 13px;
+    font-family: 'SF Mono','Consolas',monospace; font-size: 15px;
+    font-weight: 700; cursor: pointer; color: var(--ink);
+    white-space: pre;
+  }
+  .chip:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--grey-l); }
+  .chip.line { width: 100%; text-align: left; }
+  .chip.ghost { opacity: 0; pointer-events: none; }
+  .hint { color: var(--grey); font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+
+  /* footer / feedback */
+  .lesson-footer {
+    border-top: 2px solid var(--grey-l);
+    padding: 16px 22px 22px;
+    background: #fff;
+  }
+  .lesson-footer.correct { background: var(--green-l); border-top-color: #b9ec8a; }
+  .lesson-footer.wrong { background: var(--red-l); border-top-color: #f7c4c5; }
+  .fb-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .fb-badge {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 900; flex-shrink: 0;
+  }
+  .lesson-footer.correct .fb-badge { background: var(--green); color: #fff; }
+  .lesson-footer.wrong .fb-badge { background: var(--red); color: #fff; }
+  .fb-text { font-family: 'Baloo 2'; font-size: 20px; font-weight: 800; }
+  .lesson-footer.correct .fb-text { color: var(--green-d); }
+  .lesson-footer.wrong .fb-text { color: var(--red-d); }
+  .fb-solution {
+    font-family: 'SF Mono','Consolas',monospace; font-size: 14px;
+    color: var(--red-d); font-weight: 700; margin: 2px 0 12px 48px;
+    white-space: pre-wrap;
+  }
+
+  /* complete / fail */
+  .center-screen {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 30px 26px; gap: 6px;
+    position: relative; overflow: hidden;
+  }
+  .center-screen .big-emoji { font-size: 76px; animation: bob 1.6s ease-in-out infinite; }
+  .center-screen h2 { font-size: 32px; color: var(--green-d); }
+  .center-screen .sub { color: var(--grey); font-weight: 800; margin-bottom: 14px; }
+  .reward-row { display: flex; gap: 12px; margin: 8px 0 20px; flex-wrap: wrap; justify-content: center; }
+  .reward {
+    border: 3px solid var(--gold); border-radius: 16px;
+    padding: 10px 18px; min-width: 96px;
+  }
+  .reward .r-label { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .6px; color: var(--gold); }
+  .reward .r-value { font-size: 24px; font-weight: 900; font-family: 'Baloo 2'; color: var(--ink); }
+  .reward.blue { border-color: var(--blue); } .reward.blue .r-label { color: var(--blue); }
+  .reward.streak { border-color: var(--gold); }
+  .center-screen.fail h2 { color: var(--red-d); }
+  .perfect-badge {
+    background: var(--gold); color: #7a5b00;
+    font-weight: 900; font-size: 13px; letter-spacing: .5px;
+    padding: 6px 14px; border-radius: 20px; text-transform: uppercase;
+  }
+  .footer-actions { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; }
+
+  .confetti {
+    position: absolute; width: 10px; height: 10px; top: -20px;
+    border-radius: 2px; animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(120vh) rotate(540deg); opacity: .9; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ MAP SCREEN ============ -->
+  <div id="mapScreen" class="screen">
+    <div class="topbar">
+      <div class="stat streak"><span class="ic">🔥</span><span id="streakVal">0</span></div>
+      <div class="stat xp"><span class="ic">💎</span><span id="xpVal">0</span></div>
+      <div class="stat crown"><span class="ic">👑</span><span id="crownVal">0</span></div>
+      <div class="spacer"></div>
+      <button class="gear" id="resetBtn" title="Reset progress">⚙️</button>
+    </div>
+    <div class="map-hero">
+      <div class="mascot">🐍</div>
+      <h1>PyLingo</h1>
+      <p>Learn Python the fun way</p>
+    </div>
+    <main id="path"></main>
+    <div class="credit">A Duolingo-style Python trainer · built with Claude Code</div>
+  </div>
+
+  <!-- ============ LESSON SCREEN ============ -->
+  <div id="lessonScreen" class="screen hidden">
+    <div class="lessonbar">
+      <button class="x-btn" id="quitBtn">✕</button>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="hearts" id="heartsEl"></div>
+    </div>
+    <main id="exArea"></main>
+    <div class="lesson-footer" id="lessonFooter"></div>
+  </div>
+
+  <!-- ============ COMPLETE SCREEN ============ -->
+  <div id="completeScreen" class="screen hidden">
+    <div class="center-screen" id="completeInner"></div>
+  </div>
+
+  <!-- ============ FAIL SCREEN ============ -->
+  <div id="failScreen" class="screen hidden">
+    <div class="center-screen fail">
+      <div class="big-emoji">💔</div>
+      <h2>Out of hearts!</h2>
+      <div class="sub">Don't worry — practice makes perfect.</div>
+      <div class="footer-actions">
+        <button class="btn red wide" id="retryBtn">Try again</button>
+        <button class="btn ghost wide" id="failHomeBtn">Back to map</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+/* ===================== COURSE CONTENT ===================== */
+const COURSE = [
+  {
+    id: "u1", title: "Python Basics", label: "Unit 1", icon: "🐍",
+    color: "var(--green)", colorD: "var(--green-d)",
+    lessons: [
+      {
+        id: "u1l1", name: "Say Hello", emoji: "👋",
+        exercises: [
+          { type: "mc", q: "Which function displays text on the screen?", codeChoices: true,
+            choices: ["print()", "say()", "show()", "echo()"], answer: "print()" },
+          { type: "tokens", q: "Build a line that prints the word Hello.",
+            tokens: ["print", "(", "\"Hello\"", ")"] },
+          { type: "fill", q: "Complete the code so it prints:  Hello, world!",
+            code: "print(___)", answer: "\"Hello, world!\"", accept: ["'Hello, world!'"] },
+          { type: "mc", q: "What does this code print?", code: "print(\"Python\")",
+            choices: ["Python", "\"Python\"", "print(Python)", "Error"], answer: "Python" },
+          { type: "mc", q: "In Python, text wrapped in quotes is called a...",
+            choices: ["string", "number", "loop", "list"], answer: "string" },
+          { type: "mc", q: "Which line correctly prints the number 7?", codeChoices: true,
+            choices: ["print(7)", "print 7", "print(\"7)", "echo(7)"], answer: "print(7)" }
+        ]
+      },
+      {
+        id: "u1l2", name: "Variables", emoji: "📦",
+        exercises: [
+          { type: "mc", q: "What is a variable used for?",
+            choices: ["Storing a value under a name", "Printing text on screen", "Repeating code", "Stopping the program"],
+            answer: "Storing a value under a name" },
+          { type: "fill", q: "Create a variable called age with the value 12.",
+            code: "age = ___", answer: "12" },
+          { type: "mc", q: "What does this code print?", code: "name = \"Sam\"\nprint(name)",
+            choices: ["Sam", "name", "\"Sam\"", "Error"], answer: "Sam" },
+          { type: "tokens", q: "Store the value 100 in a variable called score.",
+            tokens: ["score", "=", "100"] },
+          { type: "mc", q: "What is the value of x after this code runs?", code: "x = 5\nx = x + 3",
+            choices: ["8", "5", "3", "53"], answer: "8" },
+          { type: "fill", q: "Print the value stored in the variable color.",
+            code: "color = \"blue\"\nprint(___)", answer: "color" },
+          { type: "mc", q: "Which of these is a valid variable name?", codeChoices: true,
+            choices: ["my_score", "2cool", "my score", "class"], answer: "my_score" }
+        ]
+      },
+      {
+        id: "u1l3", name: "Numbers & Types", emoji: "🔢",
+        exercises: [
+          { type: "mc", q: "What does this print?", code: "print(3 + 4)",
+            choices: ["7", "34", "3 + 4", "Error"], answer: "7" },
+          { type: "mc", q: "What type of number is 3.14?", codeChoices: true,
+            choices: ["float", "int", "str", "bool"], answer: "float" },
+          { type: "mc", q: "What does this print?", code: "print(10 / 2)",
+            choices: ["5.0", "5", "2", "20"], answer: "5.0" },
+          { type: "fill", q: "Complete the code to print the remainder of 17 divided by 5.",
+            code: "print(17 ___ 5)", answer: "%" },
+          { type: "mc", q: "What does this print?", code: "print(\"3\" + \"4\")",
+            choices: ["34", "7", "\"34\"", "Error"], answer: "34" },
+          { type: "mc", q: "What does this print?", code: "print(2 ** 3)",
+            choices: ["8", "6", "9", "23"], answer: "8" },
+          { type: "mc", q: "What does int(\"5\") do?",
+            choices: ["Turns the string \"5\" into the number 5", "Prints 5 on screen",
+                      "Deletes the value 5", "Turns the number 5 into \"5\""],
+            answer: "Turns the string \"5\" into the number 5" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "u2", title: "Conditionals", label: "Unit 2", icon: "🤔",
+    color: "var(--blue)", colorD: "var(--blue-d)",
+    lessons: [
+      {
+        id: "u2l1", name: "True or False", emoji: "⚖️",
+        exercises: [
+          { type: "mc", q: "What does this print?", code: "print(5 > 3)",
+            choices: ["True", "False", "5", "Error"], answer: "True" },
+          { type: "mc", q: "What does this print?", code: "print(10 == 10)",
+            choices: ["True", "False", "10", "0"], answer: "True" },
+          { type: "mc", q: "Which operator checks if two values are equal?", codeChoices: true,
+            choices: ["==", "=", "!=", "=>"], answer: "==" },
+          { type: "mc", q: "What does this print?", code: "print(7 != 7)",
+            choices: ["False", "True", "7", "0"], answer: "False" },
+          { type: "fill", q: "Check whether x is less than or equal to 10.",
+            code: "x = 4\nprint(x ___ 10)", answer: "<=" },
+          { type: "mc", q: "What does this print?", code: "print(3 > 2 and 2 > 5)",
+            choices: ["False", "True", "Error", "None"], answer: "False" },
+          { type: "mc", q: "What does this print?", code: "print(not True)",
+            choices: ["False", "True", "not", "Error"], answer: "False" }
+        ]
+      },
+      {
+        id: "u2l2", name: "Making Decisions", emoji: "🔀",
+        exercises: [
+          { type: "mc", q: "Which keyword starts a condition?", codeChoices: true,
+            choices: ["if", "when", "check", "test"], answer: "if" },
+          { type: "fill", q: "Add the symbol that must end an if line.",
+            code: "age = 18\nif age >= 18___\n    print(\"Adult\")", answer: ":" },
+          { type: "mc", q: "What does this print?",
+            code: "x = 3\nif x > 5:\n    print(\"big\")\nelse:\n    print(\"small\")",
+            choices: ["small", "big", "3", "Nothing"], answer: "small" },
+          { type: "mc", q: "What does this print?",
+            code: "n = 0\nif n > 0:\n    print(\"positive\")\nelif n == 0:\n    print(\"zero\")\nelse:\n    print(\"negative\")",
+            choices: ["zero", "positive", "negative", "0"], answer: "zero" },
+          { type: "order", q: "Arrange the code so it prints \"Pass\".",
+            lines: ["score = 70", "if score >= 50:", "    print(\"Pass\")"] },
+          { type: "tokens", q: "Build a line that checks if name equals \"Sam\".",
+            tokens: ["if", "name", "==", "\"Sam\"", ":"] },
+          { type: "mc", q: "What runs when the if condition is False and there is an else?",
+            choices: ["The else block", "The if block", "Nothing at all", "The program stops"],
+            answer: "The else block" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "u3", title: "Loops", label: "Unit 3", icon: "🔁",
+    color: "var(--purple)", colorD: "var(--purple-d)",
+    lessons: [
+      {
+        id: "u3l1", name: "Repeat with for", emoji: "🔁",
+        exercises: [
+          { type: "mc", q: "How many times does this loop run?", code: "for i in range(5):\n    print(\"Hi\")",
+            choices: ["5", "4", "6", "1"], answer: "5" },
+          { type: "fill", q: "Make this loop repeat exactly 4 times.",
+            code: "for i in range(___):\n    print(\"Go\")", answer: "4" },
+          { type: "mc", q: "What numbers does this print, in order?", code: "for i in range(3):\n    print(i)",
+            choices: ["0, 1, 2", "1, 2, 3", "0, 1, 2, 3", "3"], answer: "0, 1, 2" },
+          { type: "mc", q: "What numbers does range(2, 5) produce?",
+            choices: ["2, 3, 4", "2, 3, 4, 5", "3, 4, 5", "2, 5"], answer: "2, 3, 4" },
+          { type: "order", q: "Arrange the code to print 0, 1 and 2.",
+            lines: ["for i in range(3):", "    print(i)"] },
+          { type: "tokens", q: "Build a loop header that repeats 10 times.",
+            tokens: ["for", "i", "in", "range", "(", "10", ")", ":"] },
+          { type: "mc", q: "What value does i hold on the FIRST pass of  for i in range(3)?",
+            choices: ["0", "1", "3", "i"], answer: "0" }
+        ]
+      },
+      {
+        id: "u3l2", name: "Repeat with while", emoji: "♻️",
+        exercises: [
+          { type: "mc", q: "A while loop keeps repeating...",
+            choices: ["while its condition is True", "exactly one time", "a random number of times", "only when the file is saved"],
+            answer: "while its condition is True" },
+          { type: "mc", q: "What numbers does this print, in order?",
+            code: "n = 3\nwhile n > 0:\n    print(n)\n    n = n - 1",
+            choices: ["3, 2, 1", "3, 2, 1, 0", "1, 2, 3", "0, 1, 2"], answer: "3, 2, 1" },
+          { type: "fill", q: "Keep looping while count is below 5.",
+            code: "count = 0\nwhile count ___ 5:\n    count = count + 1", answer: "<" },
+          { type: "mc", q: "What is wrong with this loop?", code: "n = 1\nwhile n > 0:\n    print(n)",
+            choices: ["It never stops (infinite loop)", "It has a syntax error", "It prints nothing", "It runs only once"],
+            answer: "It never stops (infinite loop)" },
+          { type: "mc", q: "Which keyword stops a loop early?", codeChoices: true,
+            choices: ["break", "stop", "exit", "end"], answer: "break" },
+          { type: "order", q: "Arrange the code to count down: 2, then 1.",
+            lines: ["n = 2", "while n > 0:", "    print(n)", "    n = n - 1"] },
+          { type: "mc", q: "What does this print?", code: "i = 0\nwhile i < 3:\n    i = i + 1\nprint(i)",
+            choices: ["3", "0", "2", "Nothing"], answer: "3" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "u4", title: "Functions", label: "Unit 4", icon: "🛠️",
+    color: "var(--orange)", colorD: "var(--orange-d)",
+    lessons: [
+      {
+        id: "u4l1", name: "Make a Function", emoji: "🧩",
+        exercises: [
+          { type: "mc", q: "Which keyword defines a function?", codeChoices: true,
+            choices: ["def", "function", "func", "define"], answer: "def" },
+          { type: "fill", q: "Complete the definition of a function called hello.",
+            code: "___ hello():\n    print(\"Hello\")", answer: "def" },
+          { type: "mc", q: "What does this code print?", code: "def shout():\n    print(\"HEY\")\nshout()",
+            choices: ["HEY", "Nothing", "shout", "Error"], answer: "HEY" },
+          { type: "order", q: "Arrange the code to define greet, then call it.",
+            lines: ["def greet():", "    print(\"Hi!\")", "greet()"] },
+          { type: "tokens", q: "Write a line that calls a function named start.",
+            tokens: ["start", "(", ")"] },
+          { type: "mc", q: "When does the code INSIDE a function run?",
+            choices: ["When the function is called", "When the file is saved", "As soon as Python starts", "Never"],
+            answer: "When the function is called" },
+          { type: "mc", q: "How many times is \"go\" printed?",
+            code: "def run():\n    print(\"go\")\nrun()\nrun()",
+            choices: ["2", "1", "0", "3"], answer: "2" }
+        ]
+      },
+      {
+        id: "u4l2", name: "Inputs & Outputs", emoji: "📥",
+        exercises: [
+          { type: "mc", q: "A value you pass into a function is called a...",
+            choices: ["argument", "loop", "backdrop", "comment"], answer: "argument" },
+          { type: "fill", q: "Give this function a parameter called name.",
+            code: "def greet(___):\n    print(\"Hi\", name)", answer: "name" },
+          { type: "mc", q: "What does this print?", code: "def add(a, b):\n    return a + b\nprint(add(2, 3))",
+            choices: ["5", "23", "a + b", "Error"], answer: "5" },
+          { type: "mc", q: "What does the return keyword do?",
+            choices: ["Sends a value back from the function", "Prints a value on screen",
+                      "Stops the whole program", "Defines a new function"],
+            answer: "Sends a value back from the function" },
+          { type: "mc", q: "What does this print?", code: "def double(x):\n    return x * 2\nprint(double(4))",
+            choices: ["8", "6", "4", "42"], answer: "8" },
+          { type: "tokens", q: "Build a statement that returns the value total.",
+            tokens: ["return", "total"] },
+          { type: "order", q: "Arrange the code to define square, then print the square of 3.",
+            lines: ["def square(n):", "    return n * n", "print(square(3))"] }
+        ]
+      }
+    ]
+  }
+];
+
+/* ===================== STATE & STORAGE ===================== */
+const STORAGE_KEY = "pylingo_v1";
+const HEARTS_PER_LESSON = 5;
+
+let state = {
+  xp: 0,
+  completed: {},      // { lessonId: true }
+  streak: 0,
+  lastActive: null    // "YYYY-MM-DD"
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) state = Object.assign(state, JSON.parse(raw));
+  } catch (e) { /* ignore corrupt data */ }
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+/* ---- dates / streak ---- */
+function dateStr(d) {
+  return d.getFullYear() + "-" +
+    String(d.getMonth() + 1).padStart(2, "0") + "-" +
+    String(d.getDate()).padStart(2, "0");
+}
+function todayStr() { return dateStr(new Date()); }
+function yesterdayStr() { const d = new Date(); d.setDate(d.getDate() - 1); return dateStr(d); }
+
+function registerActivity() {
+  const t = todayStr();
+  if (state.lastActive === t) return;
+  state.streak = (state.lastActive === yesterdayStr()) ? state.streak + 1 : 1;
+  state.lastActive = t;
+}
+
+/* ===================== HELPERS ===================== */
+function esc(s) {
+  return String(s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+function el(tag, cls, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html != null) e.innerHTML = html;
+  return e;
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function arraysEqual(a, b) {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+function flatLessons() {
+  const out = [];
+  COURSE.forEach(u => u.lessons.forEach(l => out.push({ unit: u, lesson: l })));
+  return out;
+}
+function lessonState(lessonId) {
+  if (state.completed[lessonId]) return "done";
+  for (const f of flatLessons()) {
+    if (!state.completed[f.lesson.id]) {
+      return f.lesson.id === lessonId ? "current" : "locked";
+    }
+  }
+  return "locked";
+}
+
+/* ===================== SCREENS ===================== */
+const screens = ["mapScreen", "lessonScreen", "completeScreen", "failScreen"];
+function showScreen(id) {
+  screens.forEach(s => document.getElementById(s).classList.toggle("hidden", s !== id));
+  window.scrollTo(0, 0);
+}
+
+/* ===================== MAP RENDERING ===================== */
+function renderMap() {
+  document.getElementById("streakVal").textContent = state.streak;
+  document.getElementById("xpVal").textContent = state.xp;
+  document.getElementById("crownVal").textContent = Object.keys(state.completed).length;
+
+  const path = document.getElementById("path");
+  path.innerHTML = "";
+
+  const offsets = [0, 36, 52, 36, 0, -36, -52, -36];
+  let nodeCounter = 0;
+
+  COURSE.forEach(unit => {
+    const header = el("div", "unit-header");
+    header.style.background = unit.color;
+    header.innerHTML =
+      `<span class="u-icon">${unit.icon}</span>
+       <div class="u-meta">
+         <div class="u-label">${esc(unit.label)}</div>
+         <div class="u-title">${esc(unit.title)}</div>
+       </div>`;
+    path.appendChild(header);
+
+    const nodes = el("div", "nodes");
+    unit.lessons.forEach((lesson, li) => {
+      const st = lessonState(lesson.id);
+      const row = el("div", "node-row");
+      row.style.transform = `translateX(${offsets[nodeCounter % offsets.length]}px)`;
+      nodeCounter++;
+
+      if (li > 0) nodes.appendChild(el("div", "connector"));
+
+      if (st === "current") {
+        row.classList.add("has-bubble");
+        row.appendChild(el("div", "start-bubble", "START"));
+      }
+
+      const node = el("button", "node " + st);
+      node.style.background = (st === "locked") ? "" : unit.color;
+      node.innerHTML = `<span class="ring"></span><span class="emoji">${lesson.emoji}</span>`;
+      node.title = lesson.name;
+      node.addEventListener("click", () => {
+        if (st === "locked") {
+          node.classList.remove("shake");
+          void node.offsetWidth;
+          node.classList.add("shake");
+          return;
+        }
+        startLesson(lesson.id);
+      });
+      row.appendChild(node);
+      row.appendChild(el("div", "lesson-name", esc(lesson.name)));
+      nodes.appendChild(row);
+    });
+    path.appendChild(nodes);
+  });
+}
+
+/* ===================== LESSON SESSION ===================== */
+let session = null;
+
+function findLesson(lessonId) {
+  for (const u of COURSE)
+    for (const l of u.lessons)
+      if (l.id === lessonId) return { unit: u, lesson: l };
+  return null;
+}
+
+function startLesson(lessonId) {
+  const found = findLesson(lessonId);
+  if (!found) return;
+  session = {
+    lessonId,
+    unit: found.unit,
+    lesson: found.lesson,
+    remaining: found.lesson.exercises.slice(),   // exercises still to answer correctly
+    total: found.lesson.exercises.length,
+    correctCount: 0,
+    hearts: HEARTS_PER_LESSON,
+    mistakes: 0,
+    response: null,
+    answered: false,
+    lastCorrect: false
+  };
+  showScreen("lessonScreen");
+  renderHearts();
+  renderProgress();
+  renderExercise();
+}
+
+function renderHearts() {
+  const wrap = document.getElementById("heartsEl");
+  wrap.innerHTML = "";
+  for (let i = 0; i < HEARTS_PER_LESSON; i++) {
+    wrap.appendChild(el("span", "h" + (i < session.hearts ? "" : " empty"), "❤️"));
+  }
+}
+function renderProgress() {
+  const pct = (session.correctCount / session.total) * 100;
+  document.getElementById("progressFill").style.width = pct + "%";
+}
+
+/* ---- exercise rendering ---- */
+function renderExercise() {
+  session.response = null;
+  session.answered = false;
+  const ex = session.remaining[0];
+  const area = document.getElementById("exArea");
+  area.style.pointerEvents = "";
+  area.innerHTML = "";
+
+  const kicker = { mc: "Choose the answer", fill: "Fill in the blank",
+                   order: "Put the lines in order", tokens: "Build the code" }[ex.type];
+  area.appendChild(el("div", "ex-kicker", kicker));
+  area.appendChild(el("h2", "ex-prompt", esc(ex.q)));
+
+  if (ex.type === "mc") renderMC(ex, area);
+  else if (ex.type === "fill") renderFill(ex, area);
+  else renderBuild(ex, area);
+
+  renderFooterCheck();
+}
+
+function renderMC(ex, area) {
+  if (ex.code) area.appendChild(el("pre", "code", esc(ex.code)));
+  const wrap = el("div", "choices");
+  shuffle(ex.choices).forEach(choice => {
+    const c = el("button", "choice" + (ex.codeChoices ? " mono" : ""), esc(choice));
+    c.dataset.value = choice;
+    c.addEventListener("click", () => {
+      if (session.answered) return;
+      wrap.querySelectorAll(".choice").forEach(x => x.classList.remove("selected"));
+      c.classList.add("selected");
+      session.response = choice;
+      updateCheckButton();
+    });
+    wrap.appendChild(c);
+  });
+  area.appendChild(wrap);
+}
+
+function renderFill(ex, area) {
+  const parts = ex.code.split("___");
+  const pre = el("pre", "code");
+  pre.appendChild(document.createTextNode(parts[0]));
+  const input = el("input", "blank-input");
+  input.type = "text";
+  input.autocapitalize = "off";
+  input.autocomplete = "off";
+  input.spellcheck = false;
+  input.size = Math.max(String(ex.answer).length, 4);
+  input.addEventListener("input", () => {
+    session.response = input.value;
+    updateCheckButton();
+  });
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); onPrimaryKey(); }
+  });
+  pre.appendChild(input);
+  pre.appendChild(document.createTextNode(parts[1] || ""));
+  area.appendChild(pre);
+  setTimeout(() => input.focus(), 50);
+}
+
+function renderBuild(ex, area) {
+  const isLines = ex.type === "order";
+  const correct = isLines ? ex.lines : ex.tokens;
+  let bank = shuffle(correct);
+  if (arraysEqual(bank, correct) && correct.length > 1) bank = shuffle(correct);
+  session.build = { correct, answer: [], bank, isLines };
+  session.response = [];
+
+  area.appendChild(el("div", "hint", isLines
+    ? "Tap the lines in the correct order."
+    : "Tap the blocks to build the code."));
+
+  const answerArea = el("div", "answer-area" + (isLines ? " lines" : ""));
+  answerArea.id = "answerArea";
+  const bankArea = el("div", "bank" + (isLines ? " lines" : ""));
+  bankArea.id = "bankArea";
+  area.appendChild(answerArea);
+  area.appendChild(bankArea);
+  renderBuildChips();
+}
+
+function renderBuildChips() {
+  const b = session.build;
+  const answerArea = document.getElementById("answerArea");
+  const bankArea = document.getElementById("bankArea");
+  answerArea.innerHTML = "";
+  bankArea.innerHTML = "";
+
+  b.answer.forEach((item, i) => {
+    const chip = el("button", "chip" + (b.isLines ? " line" : ""), esc(item));
+    chip.addEventListener("click", () => {
+      if (session.answered) return;
+      b.answer.splice(i, 1);
+      b.bank.push(item);
+      syncBuildResponse();
+      renderBuildChips();
+    });
+    answerArea.appendChild(chip);
+  });
+
+  b.bank.forEach((item, i) => {
+    const chip = el("button", "chip" + (b.isLines ? " line" : ""), esc(item));
+    chip.addEventListener("click", () => {
+      if (session.answered) return;
+      b.bank.splice(i, 1);
+      b.answer.push(item);
+      syncBuildResponse();
+      renderBuildChips();
+    });
+    bankArea.appendChild(chip);
+  });
+}
+function syncBuildResponse() {
+  session.response = session.build.answer.slice();
+  updateCheckButton();
+}
+
+/* ---- check / feedback ---- */
+function hasResponse() {
+  const r = session.response;
+  if (r == null) return false;
+  if (Array.isArray(r)) return r.length > 0;
+  return String(r).trim().length > 0;
+}
+
+function renderFooterCheck() {
+  const f = document.getElementById("lessonFooter");
+  f.className = "lesson-footer";
+  f.innerHTML = "";
+  const btn = el("button", "btn wide", "Check");
+  btn.id = "checkBtn";
+  btn.disabled = !hasResponse();
+  btn.addEventListener("click", checkAnswer);
+  f.appendChild(btn);
+}
+function updateCheckButton() {
+  const btn = document.getElementById("checkBtn");
+  if (btn) btn.disabled = !hasResponse();
+}
+
+function isCorrect(ex) {
+  if (ex.type === "mc") return session.response === ex.answer;
+  if (ex.type === "fill") {
+    const got = String(session.response).trim();
+    const ok = [ex.answer].concat(ex.accept || []);
+    return ok.some(a => a === got);
+  }
+  return arraysEqual(session.response || [], session.build.correct);
+}
+function correctText(ex) {
+  if (ex.type === "mc") return ex.answer;
+  if (ex.type === "fill") return ex.code.replace("___", ex.answer);
+  return session.build.correct.join(ex.type === "order" ? "\n" : " ");
+}
+
+function checkAnswer() {
+  if (session.answered) return;
+  const ex = session.remaining[0];
+  session.answered = true;
+  document.getElementById("exArea").style.pointerEvents = "none";
+  const correct = isCorrect(ex);
+  session.lastCorrect = correct;
+
+  // mark choices visually for mc
+  if (ex.type === "mc") {
+    document.querySelectorAll(".choice").forEach(c => {
+      if (c.dataset.value === ex.answer) c.classList.add("right");
+      else if (c.dataset.value === session.response) c.classList.add("wrong");
+    });
+  }
+
+  if (!correct) {
+    session.hearts--;
+    session.mistakes++;
+    renderHearts();
+  }
+  renderFooterFeedback(correct, ex);
+}
+
+function renderFooterFeedback(correct, ex) {
+  const f = document.getElementById("lessonFooter");
+  f.className = "lesson-footer " + (correct ? "correct" : "wrong");
+  f.innerHTML = "";
+
+  const head = el("div", "fb-head");
+  head.appendChild(el("div", "fb-badge", correct ? "✓" : "✕"));
+  head.appendChild(el("div", "fb-text", correct ? "Nice work!" : "Not quite"));
+  f.appendChild(head);
+
+  if (!correct) {
+    f.appendChild(el("div", "fb-solution", "Correct answer:  " + esc(correctText(ex))));
+  }
+
+  const outOfHearts = !correct && session.hearts <= 0;
+  const btn = el("button", "btn wide " + (correct ? "" : "red"),
+    outOfHearts ? "See results" : "Continue");
+  btn.id = "continueBtn";
+  btn.addEventListener("click", continueLesson);
+  f.appendChild(btn);
+}
+
+function continueLesson() {
+  const ex = session.remaining.shift();
+
+  if (session.lastCorrect) {
+    session.correctCount++;
+  } else {
+    if (session.hearts <= 0) { failLesson(); return; }
+    session.remaining.push(ex);   // re-queue the missed exercise
+  }
+  renderProgress();
+
+  if (session.remaining.length === 0) { finishLesson(); return; }
+  renderExercise();
+}
+
+/* ---- end states ---- */
+function finishLesson() {
+  const alreadyDone = !!state.completed[session.lessonId];
+  const perfect = session.mistakes === 0;
+  let earned;
+  if (alreadyDone) {
+    earned = 5;                       // replay / practice
+  } else {
+    earned = 10 + (perfect ? 5 : 0);  // base + perfect bonus
+  }
+  state.xp += earned;
+  state.completed[session.lessonId] = true;
+  registerActivity();
+  saveState();
+
+  showCompleteScreen(earned, perfect, alreadyDone);
+}
+
+function showCompleteScreen(earned, perfect, replay) {
+  const inner = document.getElementById("completeInner");
+  inner.innerHTML = "";
+
+  inner.appendChild(el("div", "big-emoji", "🐍"));
+  inner.appendChild(el("h2", null, replay ? "Practice complete!" : "Lesson complete!"));
+  inner.appendChild(el("div", "sub", esc(session.unit.title) + " · " + esc(session.lesson.name)));
+  if (perfect && !replay) inner.appendChild(el("div", "perfect-badge", "⭐ Perfect lesson"));
+
+  const row = el("div", "reward-row");
+  row.innerHTML =
+    `<div class="reward"><div class="r-label">Total XP</div><div class="r-value">+${earned}</div></div>
+     <div class="reward streak"><div class="r-label">Day streak</div><div class="r-value">🔥 ${state.streak}</div></div>
+     <div class="reward blue"><div class="r-label">Crowns</div><div class="r-value">👑 ${Object.keys(state.completed).length}</div></div>`;
+  inner.appendChild(row);
+
+  const actions = el("div", "footer-actions");
+  const cont = el("button", "btn wide", "Continue");
+  cont.addEventListener("click", () => { renderMap(); showScreen("mapScreen"); });
+  actions.appendChild(cont);
+  inner.appendChild(actions);
+
+  showScreen("completeScreen");
+  launchConfetti(document.getElementById("completeScreen").firstElementChild);
+}
+
+function failLesson() {
+  showScreen("failScreen");
+}
+
+/* ---- confetti ---- */
+function launchConfetti(container) {
+  const colors = ["#58cc02", "#1cb0f6", "#ce82ff", "#ff9600", "#ffc800", "#ff4b4b"];
+  for (let i = 0; i < 36; i++) {
+    const c = el("div", "confetti");
+    c.style.left = Math.random() * 100 + "%";
+    c.style.background = colors[i % colors.length];
+    c.style.animationDuration = (1.6 + Math.random() * 1.6) + "s";
+    c.style.animationDelay = (Math.random() * 0.4) + "s";
+    if (Math.random() > 0.5) c.style.borderRadius = "50%";
+    container.appendChild(c);
+    setTimeout(() => c.remove(), 4200);
+  }
+}
+
+/* ===================== KEYBOARD ===================== */
+function onPrimaryKey() {
+  const cont = document.getElementById("continueBtn");
+  if (cont) { cont.click(); return; }
+  const check = document.getElementById("checkBtn");
+  if (check && !check.disabled) check.click();
+}
+document.addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  if (document.getElementById("lessonScreen").classList.contains("hidden")) return;
+  if (e.target && e.target.classList && e.target.classList.contains("blank-input")) return;
+  e.preventDefault();
+  onPrimaryKey();
+});
+
+/* ===================== TOP-LEVEL CONTROLS ===================== */
+document.getElementById("quitBtn").addEventListener("click", () => {
+  if (session && session.correctCount < session.total) {
+    if (!confirm("Quit lesson? Your progress in this lesson won't be saved.")) return;
+  }
+  session = null;
+  renderMap();
+  showScreen("mapScreen");
+});
+document.getElementById("retryBtn").addEventListener("click", () => {
+  startLesson(session.lessonId);
+});
+document.getElementById("failHomeBtn").addEventListener("click", () => {
+  session = null;
+  renderMap();
+  showScreen("mapScreen");
+});
+document.getElementById("resetBtn").addEventListener("click", () => {
+  if (!confirm("Reset ALL progress (XP, streak, crowns)? This cannot be undone.")) return;
+  state = { xp: 0, completed: {}, streak: 0, lastActive: null };
+  saveState();
+  renderMap();
+});
+
+/* ===================== INIT ===================== */
+loadState();
+renderMap();
+showScreen("mapScreen");
+</script>
+</body>
+</html>
