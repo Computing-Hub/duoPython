@@ -1,0 +1,23 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" fill="#58cc02"/>
+  <!-- S-curve snake body -->
+  <path d="M 140 388
+           C 140 280, 380 320, 380 200
+           C 380 100, 140 140, 140 110"
+        stroke="#ffffff"
+        stroke-width="82"
+        fill="none"
+        stroke-linecap="round" />
+  <!-- eyes on the head (top-left end of the S) -->
+  <circle cx="122" cy="100" r="10" fill="#2b2b3a"/>
+  <circle cx="160" cy="100" r="10" fill="#2b2b3a"/>
+  <!-- eye highlights -->
+  <circle cx="126" cy="96" r="3.5" fill="#ffffff"/>
+  <circle cx="164" cy="96" r="3.5" fill="#ffffff"/>
+  <!-- small forked tongue flicking up -->
+  <path d="M 141 70 L 132 50 M 141 70 L 150 50"
+        stroke="#ff4b4b"
+        stroke-width="6"
+        fill="none"
+        stroke-linecap="round" />
+</svg>

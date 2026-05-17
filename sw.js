@@ -4,7 +4,7 @@
    the cached shell). Content updates to index.html flow through
    automatically via the network-first strategy — bumping is only
    needed when you want to force a clean cache. */
-const CACHE_VERSION = "pylingo-v1";
+const CACHE_VERSION = "pylingo-v2";
 
 const SHELL = [
   "./",
