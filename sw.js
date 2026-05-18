@@ -4,7 +4,7 @@
    the cached shell). Content updates to index.html flow through
    automatically via the network-first strategy — bumping is only
    needed when you want to force a clean cache. */
-const CACHE_VERSION = "pylingo-v3";
+const CACHE_VERSION = "pylingo-v4";
 
 const SHELL = [
   "./",
@@ -12,7 +12,8 @@ const SHELL = [
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
-  "./apple-touch-icon.png"
+  "./apple-touch-icon.png",
+  "./mascot.svg"
 ];
 
 self.addEventListener("install", event => {
