@@ -500,6 +500,59 @@
     padding: 6px 14px; border-radius: 20px; text-transform: uppercase;
   }
 
+  /* ---------- practice CTA (map) ---------- */
+  .practice-cta {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; padding: 13px 14px;
+    border: 3px solid var(--teal);
+    background: linear-gradient(135deg, #e6fbf7 0%, #cdf3eb 100%);
+    border-radius: 18px; cursor: pointer;
+    text-align: left;
+    box-shadow: 0 4px 0 var(--teal-d);
+    font-family: 'Nunito', sans-serif;
+    transition: transform .08s, box-shadow .08s;
+  }
+  .practice-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--teal-d); }
+  .practice-cta[disabled] {
+    border-color: var(--grey-l); background: #fafafa;
+    box-shadow: 0 4px 0 #cfcfcf; cursor: not-allowed; opacity: .85;
+  }
+  .practice-cta .pc-emoji { font-size: 28px; line-height: 1; flex-shrink: 0; }
+  .practice-cta .pc-text { flex: 1; min-width: 0; }
+  .practice-cta .pc-title {
+    font-family: 'Baloo 2'; font-weight: 800; font-size: 18px;
+    color: var(--teal-d);
+  }
+  .practice-cta[disabled] .pc-title { color: var(--grey); }
+  .practice-cta .pc-sub { font-size: 11px; font-weight: 800; color: var(--grey); margin-top: 1px; }
+  .practice-cta .pc-arrow {
+    font-size: 22px; font-weight: 900; color: var(--teal); padding-right: 4px;
+  }
+  .practice-cta[disabled] .pc-arrow { color: var(--grey); }
+
+  /* ---------- practice gameplay bar ---------- */
+  .practicebar { padding: 14px 16px 10px; }
+  .practicebar .topline {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .practicebar .topline .x-btn { padding: 0 4px 0 0; }
+  .practicebar .p-stat {
+    font-weight: 900; font-size: 15px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .practicebar .p-stat.streak { color: var(--orange); }
+  .practicebar .p-stat.best { color: var(--teal-d); }
+  .practicebar .p-stat.answered {
+    color: var(--grey); font-size: 13px; font-weight: 800;
+    margin-left: auto;
+  }
+
+  /* ---------- practice intro ---------- */
+  .btn.teal { background: var(--teal); box-shadow: 0 4px 0 var(--teal-d); color: #fff; }
+  .btn.teal:active { box-shadow: 0 2px 0 var(--teal-d); }
+  .center-screen .practice-title { color: var(--teal-d); }
+  .reward.teal { border-color: var(--teal); } .reward.teal .r-label { color: var(--teal-d); }
+
   /* ---------- update banner ---------- */
   .update-banner {
     position: fixed;
@@ -555,6 +608,14 @@
         </div>
         <span class="ac-arrow">→</span>
       </button>
+      <button class="practice-cta" id="openPracticeBtn" style="margin-top: 8px;">
+        <span class="pc-emoji">🧠</span>
+        <div class="pc-text">
+          <div class="pc-title">Practice Mode</div>
+          <div class="pc-sub" id="practiceCtaSub">Endless mix · no pressure</div>
+        </div>
+        <span class="pc-arrow">→</span>
+      </button>
     </div>
     <main id="path"></main>
     <div class="credit">A Duolingo-style Python trainer · built with Claude Code</div>
@@ -576,6 +637,14 @@
         <span class="a-stat lives" id="arcLives"></span>
       </div>
       <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+    </div>
+    <div class="practicebar hidden" id="practicebar">
+      <div class="topline">
+        <button class="x-btn" id="practiceQuitBtn">✕</button>
+        <span class="p-stat streak">🔥 <span id="practiceStreak">0</span></span>
+        <span class="p-stat best">⭐ Best <span id="practiceBest">0</span></span>
+        <span class="p-stat answered"><span id="practiceAnswered">0</span> answered</span>
+      </div>
     </div>
     <main id="exArea"></main>
     <div class="lesson-footer" id="lessonFooter"></div>
@@ -629,6 +698,27 @@
   <!-- ============ ARCADE END SCREEN ============ -->
   <div id="arcadeEndScreen" class="screen hidden">
     <div class="center-screen" id="arcadeEndInner"></div>
+  </div>
+
+  <!-- ============ PRACTICE INTRO SCREEN ============ -->
+  <div id="practiceIntroScreen" class="screen hidden">
+    <div class="center-screen">
+      <div class="big-emoji">🧠</div>
+      <h2 class="practice-title">Practice Mode</h2>
+      <div class="sub">Endless mix of fresh questions — practice what you've learned.</div>
+      <div class="arcade-rules">
+        <strong>How it works</strong><br>
+        ✨ Questions generated fresh each time — no two runs alike<br>
+        🎯 Pulled from the topics you've already unlocked<br>
+        🚫 No hearts, no timer, no streak at stake<br>
+        💎 +1 XP for every correct answer<br>
+        🔥 Build a streak and beat your best in-session record
+      </div>
+      <div class="footer-actions">
+        <button class="btn teal wide" id="practiceStartBtn">Start practising</button>
+        <button class="btn ghost wide" id="practiceIntroBackBtn">Back to map</button>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -1316,7 +1406,7 @@ function playWrong() {
 
 /* ===================== SCREENS ===================== */
 const screens = ["mapScreen", "lessonScreen", "completeScreen", "failScreen",
-                 "arcadeIntroScreen", "arcadeEndScreen"];
+                 "arcadeIntroScreen", "arcadeEndScreen", "practiceIntroScreen"];
 function showScreen(id) {
   screens.forEach(s => document.getElementById(s).classList.toggle("hidden", s !== id));
   window.scrollTo(0, 0);
@@ -1328,6 +1418,7 @@ function renderMap() {
   document.getElementById("xpVal").textContent = state.xp;
   document.getElementById("crownVal").textContent = Object.keys(state.completed).length;
   refreshArcadeCta();
+  refreshPracticeCta();
 
   const path = document.getElementById("path");
   path.innerHTML = "";
@@ -1416,6 +1507,7 @@ function startLesson(lessonId) {
   };
   document.getElementById("lessonbar").classList.remove("hidden");
   document.getElementById("arcadebar").classList.add("hidden");
+  document.getElementById("practicebar").classList.add("hidden");
   showScreen("lessonScreen");
   renderHearts();
   renderProgress();
@@ -1594,6 +1686,7 @@ function correctText(ex) {
 function checkAnswer() {
   if (!session || session.answered) return;
   if (session.mode === "arcade") { arcadeEvaluate(false); return; }
+  if (session.mode === "practice") { practiceEvaluate(); return; }
   const ex = session.remaining[0];
   session.answered = true;
   document.getElementById("exArea").style.pointerEvents = "none";
@@ -1716,6 +1809,501 @@ function launchConfetti(container) {
     container.appendChild(c);
     setTimeout(() => c.remove(), 4200);
   }
+}
+
+/* ===================== PRACTICE MODE =====================
+   Procedural question generators + an endless-mix session.
+   Generators are tagged with the topic they belong to. A generator
+   only enters the pool once the student has cleared at least one
+   level of that topic, so practice never asks about material the
+   student hasn't met yet. */
+
+function pickInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function pickFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// Build n unique choices: the answer plus distractors drawn from `others`.
+// Distractors that duplicate the answer (or each other) are skipped.
+function distinctChoices(answer, others, n) {
+  n = n || 4;
+  const seen = new Set([String(answer)]);
+  const out = [String(answer)];
+  for (let i = 0; i < others.length && out.length < n; i++) {
+    const v = String(others[i]);
+    if (seen.has(v)) continue;
+    seen.add(v);
+    out.push(v);
+  }
+  return out;
+}
+
+/* ---- vars topic ---- */
+function genCompoundAssign() {
+  const start = pickInt(2, 20);
+  const op = pickFrom(["+=", "-=", "*="]);
+  const operand = pickInt(2, 5);
+  let result;
+  if (op === "+=") result = start + operand;
+  else if (op === "-=") result = start - operand;
+  else result = start * operand;
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `x = ${start}\nx ${op} ${operand}\nprint(x)`,
+    codeChoices: true,
+    choices: distinctChoices(result,
+      [result + 1, result - 1, start + operand, start - operand, start * operand, start, operand]),
+    answer: String(result)
+  };
+}
+
+function genTypeOf() {
+  const variants = [
+    { val: String(pickInt(1, 99)), type: "int" },
+    { val: (pickInt(1, 9) + Math.random()).toFixed(2), type: "float" },
+    { val: `"${pickFrom(["hello", "Python", "code", "Sam"])}"`, type: "str" },
+    { val: pickFrom(["True", "False"]), type: "bool" }
+  ];
+  const pick = pickFrom(variants);
+  return {
+    type: "mc",
+    q: `What is the type of ${pick.val}?`,
+    codeChoices: true,
+    choices: ["int", "float", "str", "bool"],
+    answer: pick.type
+  };
+}
+
+function genIntCast() {
+  const s = pickInt(2, 99);
+  const add = pickInt(2, 20);
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `print(int("${s}") + ${add})`,
+    codeChoices: true,
+    choices: distinctChoices(s + add, [s + add + 1, s - add, `"${s}${add}"`, "Error", s, add]),
+    answer: String(s + add)
+  };
+}
+
+function genArithmetic() {
+  const a = pickInt(4, 30);
+  const b = pickInt(2, 9);
+  const op = pickFrom(["+", "-", "*", "//", "%"]);
+  let r;
+  if (op === "+") r = a + b;
+  else if (op === "-") r = a - b;
+  else if (op === "*") r = a * b;
+  else if (op === "//") r = Math.floor(a / b);
+  else r = a % b;
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `print(${a} ${op} ${b})`,
+    codeChoices: true,
+    choices: distinctChoices(r, [r + 1, r - 1, a + b, a * b, Math.floor(a / b), a % b, a, b]),
+    answer: String(r)
+  };
+}
+
+/* ---- selection topic ---- */
+function genIfElse() {
+  const x = pickInt(1, 20);
+  const t = pickInt(1, 20);
+  const op = pickFrom([">", "<", ">=", "<=", "=="]);
+  let cond;
+  if (op === ">") cond = x > t;
+  else if (op === "<") cond = x < t;
+  else if (op === ">=") cond = x >= t;
+  else if (op === "<=") cond = x <= t;
+  else cond = x === t;
+  const yes = pickFrom(["yes", "high", "ok", "go"]);
+  const no = pickFrom(["no", "low", "stop", "wait"]);
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `x = ${x}\nif x ${op} ${t}:\n    print("${yes}")\nelse:\n    print("${no}")`,
+    choices: shuffle([yes, no, "True", "False"]),
+    answer: cond ? yes : no
+  };
+}
+
+function genElif() {
+  const x = pickInt(0, 100);
+  const a = 30, b = 70;
+  const result = x < a ? "low" : (x < b ? "mid" : "high");
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `x = ${x}\nif x < ${a}:\n    print("low")\nelif x < ${b}:\n    print("mid")\nelse:\n    print("high")`,
+    choices: ["low", "mid", "high", "Error"],
+    answer: result
+  };
+}
+
+function genBoolLogic() {
+  const a = pickFrom([true, false]);
+  const b = pickFrom([true, false]);
+  const op = pickFrom(["and", "or"]);
+  const negate = Math.random() < 0.35;
+  let r = op === "and" ? (a && b) : (a || b);
+  if (negate) r = !r;
+  const inner = `${a ? "True" : "False"} ${op} ${b ? "True" : "False"}`;
+  const expr = negate ? `not (${inner})` : inner;
+  return {
+    type: "mc",
+    q: "What does this evaluate to?",
+    code: `print(${expr})`,
+    codeChoices: true,
+    choices: ["True", "False"],
+    answer: r ? "True" : "False"
+  };
+}
+
+/* ---- loops topic ---- */
+function genRangeSum() {
+  const n = pickInt(3, 8);
+  let total = 0;
+  for (let i = 0; i < n; i++) total += i;
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `total = 0\nfor i in range(${n}):\n    total += i\nprint(total)`,
+    codeChoices: true,
+    choices: distinctChoices(total, [total + 1, total - 1, n, n * (n + 1) / 2, total + n]),
+    answer: String(total)
+  };
+}
+
+function genForLast() {
+  const n = pickInt(3, 8);
+  return {
+    type: "mc",
+    q: "What number is printed last?",
+    code: `for i in range(${n}):\n    print(i)`,
+    codeChoices: true,
+    choices: distinctChoices(n - 1, [n, n - 2, n + 1, 0, 1]),
+    answer: String(n - 1)
+  };
+}
+
+function genWhileCount() {
+  const start = pickInt(0, 5);
+  const target = start + pickInt(3, 8);
+  return {
+    type: "mc",
+    q: "What is the final value of x?",
+    code: `x = ${start}\nwhile x < ${target}:\n    x += 1\nprint(x)`,
+    codeChoices: true,
+    choices: distinctChoices(target, [target - 1, target + 1, start, start + 1]),
+    answer: String(target)
+  };
+}
+
+/* ---- strings topic ---- */
+function genStrIndex() {
+  const w = pickFrom(["python", "snake", "code", "lesson", "hello", "world", "robot"]);
+  const i = pickInt(0, w.length - 1);
+  const distractors = w.split("").filter(c => c !== w[i]);
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `s = "${w}"\nprint(s[${i}])`,
+    codeChoices: true,
+    choices: distinctChoices(w[i], shuffle(distractors)),
+    answer: w[i]
+  };
+}
+
+function genStrSlice() {
+  const w = pickFrom(["python", "snake", "lesson", "coding", "rocket"]);
+  const a = pickInt(0, w.length - 2);
+  const b = pickInt(a + 1, w.length);
+  const slice = w.slice(a, b);
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `s = "${w}"\nprint(s[${a}:${b}])`,
+    codeChoices: true,
+    choices: distinctChoices(slice, [
+      w.slice(a, Math.max(a + 1, b - 1)),
+      w.slice(a + 1, b),
+      w.slice(0, b),
+      w.slice(a),
+      w
+    ]),
+    answer: slice
+  };
+}
+
+function genStrMethod() {
+  const choice = pickInt(0, 2);
+  if (choice === 0) {
+    const w = pickFrom(["hello", "Python", "Snake", "code"]);
+    return {
+      type: "mc",
+      q: "What does this print?",
+      code: `print("${w}".upper())`,
+      codeChoices: true,
+      choices: distinctChoices(w.toUpperCase(), [w, w.toLowerCase()]),
+      answer: w.toUpperCase()
+    };
+  } else if (choice === 1) {
+    const w = pickFrom(["HELLO", "PYTHON", "SNAKE", "CODE"]);
+    return {
+      type: "mc",
+      q: "What does this print?",
+      code: `print("${w}".lower())`,
+      codeChoices: true,
+      choices: distinctChoices(w.toLowerCase(), [w, w[0] + w.slice(1).toLowerCase()]),
+      answer: w.toLowerCase()
+    };
+  }
+  const w = pickFrom(["hello", "python", "snake", "lesson", "coding", "robot"]);
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `print(len("${w}"))`,
+    codeChoices: true,
+    choices: distinctChoices(w.length, [w.length + 1, w.length - 1, w.length + 2, 0]),
+    answer: String(w.length)
+  };
+}
+
+/* ---- lists topic ---- */
+function genListIndex() {
+  const size = pickInt(3, 5);
+  const arr = [];
+  for (let i = 0; i < size; i++) arr.push(pickInt(1, 30));
+  const i = pickInt(0, size - 1);
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `nums = [${arr.join(", ")}]\nprint(nums[${i}])`,
+    codeChoices: true,
+    choices: distinctChoices(arr[i], arr.filter(v => v !== arr[i])),
+    answer: String(arr[i])
+  };
+}
+
+function genListLen() {
+  const size = pickInt(2, 7);
+  const arr = [];
+  for (let i = 0; i < size; i++) arr.push(pickFrom(["a", "b", "c", "d", "x", "y", "z"]));
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `items = [${arr.map(x => `"${x}"`).join(", ")}]\nprint(len(items))`,
+    codeChoices: true,
+    choices: distinctChoices(size, [size - 1, size + 1, size + 2, 0]),
+    answer: String(size)
+  };
+}
+
+function genListMembership() {
+  const pool = ["red", "blue", "green", "yellow", "pink", "black", "white"];
+  const arr = shuffle(pool).slice(0, pickInt(3, 4));
+  const inside = Math.random() < 0.5;
+  const test = inside
+    ? pickFrom(arr)
+    : pickFrom(pool.filter(x => arr.indexOf(x) < 0));
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `colors = [${arr.map(x => `"${x}"`).join(", ")}]\nprint("${test}" in colors)`,
+    codeChoices: true,
+    choices: ["True", "False"],
+    answer: arr.indexOf(test) >= 0 ? "True" : "False"
+  };
+}
+
+/* ---- functions topic ---- */
+function genFuncDouble() {
+  const factor = pickInt(2, 5);
+  const arg = pickInt(2, 10);
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `def f(x):\n    return x * ${factor}\nprint(f(${arg}))`,
+    codeChoices: true,
+    choices: distinctChoices(factor * arg, [factor + arg, arg, factor, factor * arg + 1, factor * arg - 1]),
+    answer: String(factor * arg)
+  };
+}
+
+function genFuncDefault() {
+  const def = pickInt(2, 9);
+  const arg = pickInt(2, 9);
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `def add(a, b=${def}):\n    return a + b\nprint(add(${arg}))`,
+    codeChoices: true,
+    choices: distinctChoices(arg + def, [arg, def, arg + def + 1, arg - def, arg * def]),
+    answer: String(arg + def)
+  };
+}
+
+const PRACTICE_GENERATORS = [
+  { topic: "vars",    gen: genCompoundAssign },
+  { topic: "vars",    gen: genTypeOf },
+  { topic: "vars",    gen: genIntCast },
+  { topic: "vars",    gen: genArithmetic },
+  { topic: "select",  gen: genIfElse },
+  { topic: "select",  gen: genElif },
+  { topic: "select",  gen: genBoolLogic },
+  { topic: "loops",   gen: genRangeSum },
+  { topic: "loops",   gen: genForLast },
+  { topic: "loops",   gen: genWhileCount },
+  { topic: "strings", gen: genStrIndex },
+  { topic: "strings", gen: genStrSlice },
+  { topic: "strings", gen: genStrMethod },
+  { topic: "lists",   gen: genListIndex },
+  { topic: "lists",   gen: genListLen },
+  { topic: "lists",   gen: genListMembership },
+  { topic: "funcs",   gen: genFuncDouble },
+  { topic: "funcs",   gen: genFuncDefault }
+];
+
+function practiceTopicUnlocked(topicId) {
+  const topic = TOPICS.find(t => t.id === topicId);
+  if (!topic) return false;
+  return topic.levels.some(l => state.completed[l.id]);
+}
+
+function eligiblePracticeGenerators() {
+  return PRACTICE_GENERATORS.filter(g => practiceTopicUnlocked(g.topic));
+}
+
+function generatePracticeExercise() {
+  const gens = eligiblePracticeGenerators();
+  if (gens.length === 0) return null;
+  const recent = (session && session.recentGen) || [];
+  let pool = gens.filter(g => recent.indexOf(g.gen) < 0);
+  if (pool.length === 0) pool = gens;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  if (session) {
+    session.recentGen = (session.recentGen || []).concat(pick.gen).slice(-3);
+  }
+  return pick.gen();
+}
+
+function refreshPracticeCta() {
+  const btn = document.getElementById("openPracticeBtn");
+  const sub = document.getElementById("practiceCtaSub");
+  if (!btn) return;
+  const hasAny = Object.keys(state.completed).length > 0;
+  btn.disabled = !hasAny;
+  sub.textContent = hasAny
+    ? "Endless mix · no pressure"
+    : "Clear any Level 1 to unlock";
+}
+
+function openPractice() {
+  if (Object.keys(state.completed).length === 0) return;
+  showScreen("practiceIntroScreen");
+}
+
+function startPractice() {
+  initAudio();
+  session = {
+    mode: "practice",
+    streak: 0,
+    bestStreak: 0,
+    totalAnswered: 0,
+    correctCount: 0,
+    remaining: [],
+    response: null,
+    answered: false,
+    build: null,
+    lastCorrect: false,
+    recentGen: []
+  };
+  document.getElementById("lessonbar").classList.add("hidden");
+  document.getElementById("arcadebar").classList.add("hidden");
+  document.getElementById("practicebar").classList.remove("hidden");
+  syncPracticeBar();
+  showScreen("lessonScreen");
+  practiceNextExercise();
+}
+
+function practiceNextExercise() {
+  const ex = generatePracticeExercise();
+  if (!ex) { quitPractice(); return; }
+  session.remaining = [ex];
+  session.response = null;
+  session.answered = false;
+  session.build = null;
+  renderExercise();
+}
+
+function syncPracticeBar() {
+  document.getElementById("practiceStreak").textContent = session.streak;
+  document.getElementById("practiceBest").textContent = session.bestStreak;
+  document.getElementById("practiceAnswered").textContent = session.totalAnswered;
+}
+
+function practiceEvaluate() {
+  if (!session || session.answered) return;
+  const ex = session.remaining[0];
+  session.answered = true;
+  document.getElementById("exArea").style.pointerEvents = "none";
+
+  const correct = isCorrect(ex);
+  session.lastCorrect = correct;
+
+  if (ex.type === "mc") {
+    document.querySelectorAll(".choice").forEach(c => {
+      if (c.dataset.value === ex.answer) c.classList.add("right");
+      else if (c.dataset.value === session.response) c.classList.add("wrong");
+    });
+  }
+
+  session.totalAnswered++;
+  if (correct) {
+    session.streak++;
+    if (session.streak > session.bestStreak) session.bestStreak = session.streak;
+    session.correctCount++;
+    state.xp += 1;
+    registerActivity();
+    saveState();
+    playCorrect();
+  } else {
+    session.streak = 0;
+    playWrong();
+  }
+  syncPracticeBar();
+  renderPracticeFooter(correct, ex);
+}
+
+function renderPracticeFooter(correct, ex) {
+  const f = document.getElementById("lessonFooter");
+  f.className = "lesson-footer " + (correct ? "correct" : "wrong");
+  f.innerHTML = "";
+
+  const head = el("div", "fb-head");
+  head.appendChild(el("div", "fb-badge", correct ? "✓" : "✕"));
+  head.appendChild(el("div", "fb-text", correct ? "Nice work!" : "Not quite"));
+  f.appendChild(head);
+
+  if (!correct) {
+    f.appendChild(el("div", "fb-solution", "Correct answer:  " + esc(correctText(ex))));
+  }
+
+  const btn = el("button", "btn wide " + (correct ? "teal" : "red"), "Next");
+  btn.id = "continueBtn";
+  btn.addEventListener("click", practiceNextExercise);
+  f.appendChild(btn);
+}
+
+function quitPractice() {
+  session = null;
+  document.getElementById("practicebar").classList.add("hidden");
+  document.getElementById("lessonbar").classList.remove("hidden");
+  renderMap();
+  showScreen("mapScreen");
 }
 
 /* ===================== ARCADE MODE ===================== */
@@ -1864,6 +2452,7 @@ function startArcadeRun() {
   };
   document.getElementById("lessonbar").classList.add("hidden");
   document.getElementById("arcadebar").classList.remove("hidden");
+  document.getElementById("practicebar").classList.add("hidden");
   syncArcadeBar();
   showScreen("lessonScreen");
   arcadeNextExercise();
@@ -2053,6 +2642,13 @@ document.getElementById("arcadeIntroBackBtn").addEventListener("click", () => {
   showScreen("mapScreen");
 });
 document.getElementById("arcadeQuitBtn").addEventListener("click", quitArcadeRun);
+
+document.getElementById("openPracticeBtn").addEventListener("click", openPractice);
+document.getElementById("practiceStartBtn").addEventListener("click", startPractice);
+document.getElementById("practiceIntroBackBtn").addEventListener("click", () => {
+  showScreen("mapScreen");
+});
+document.getElementById("practiceQuitBtn").addEventListener("click", quitPractice);
 
 /* ===================== INIT ===================== */
 loadState();
