@@ -1,10 +1,10 @@
-/* PyLingo service worker.
+/* Indent service worker.
    Bump CACHE_VERSION whenever you want students to see an "Update
    available" banner (e.g. after pushing a new SW or wanting to flush
    the cached shell). Content updates to index.html flow through
    automatically via the network-first strategy — bumping is only
    needed when you want to force a clean cache. */
-const CACHE_VERSION = "pylingo-v7";
+const CACHE_VERSION = "indent-v1";
 
 const SHELL = [
   "./",

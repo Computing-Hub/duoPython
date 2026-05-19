@@ -1,6 +1,6 @@
 {
-  "name": "PyLingo — Learn Python the fun way",
-  "short_name": "PyLingo",
+  "name": "Indent — Learn Python the fun way",
+  "short_name": "Indent",
   "description": "A Duolingo-style trainer for learning Python — lessons and arcade mode.",
   "start_url": "./",
   "scope": "./",
