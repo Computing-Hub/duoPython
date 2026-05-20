@@ -33,6 +33,9 @@
     --teal: #14b8a6;
     --teal-d: #0e8a7a;
     --gold: #ffc800;
+    --gold-d: #e0ad00;
+    --indigo: #5b6cff;
+    --indigo-d: #4a59d6;
     --ink: #3c3c3c;
     --grey: #afafaf;
     --grey-l: #e5e5e5;
@@ -1217,6 +1220,207 @@ const TOPICS = [
         ]
       }
     ]
+  },
+  {
+    id: "oop", title: "Classes & Objects", icon: "🧱",
+    color: "var(--gold)", colorD: "var(--gold-d)",
+    advanced: true,
+    levels: [
+      {
+        id: "oop_l1", name: "Classes & Objects", emoji: "🏗️",
+        exercises: [
+          { type: "mc", q: "What is a class in Python?",
+            choices: [
+              "A blueprint for creating objects",
+              "A kind of loop",
+              "A built-in number type",
+              "A way to import code"
+            ],
+            answer: "A blueprint for creating objects" },
+          { type: "mc", q: "Which keyword defines a class?", codeChoices: true,
+            choices: ["class", "def", "object", "new"], answer: "class" },
+          { type: "mc", q: "Which method runs automatically when an object is created?",
+            codeChoices: true,
+            choices: ["__init__", "__main__", "start", "create"], answer: "__init__" },
+          { type: "fill", q: "Name the method that sets up a new object.",
+            code: "class Dog:\n    def ___(self):\n        self.legs = 4", answer: "__init__" },
+          { type: "mc", q: "What does self refer to inside a method?",
+            choices: [
+              "The current object",
+              "The class name",
+              "A global variable",
+              "Whatever the user typed"
+            ],
+            answer: "The current object" },
+          { type: "mc", q: "What does this print?",
+            code: "class Dog:\n    def __init__(self, name):\n        self.name = name\nd = Dog(\"Rex\")\nprint(d.name)",
+            choices: ["Rex", "name", "Dog", "Error"], answer: "Rex" },
+          { type: "tokens", q: "Create a Dog object and store it in d.",
+            tokens: ["d", "=", "Dog", "(", ")"] }
+        ]
+      },
+      {
+        id: "oop_l2", name: "Methods", emoji: "⚙️",
+        exercises: [
+          { type: "mc", q: "How do you call a method named bark on an object dog?",
+            codeChoices: true,
+            choices: ["dog.bark()", "bark(dog)", "dog->bark()", "bark.dog()"],
+            answer: "dog.bark()" },
+          { type: "mc", q: "What is the first parameter of an instance method?",
+            codeChoices: true,
+            choices: ["self", "this", "me", "cls"], answer: "self" },
+          { type: "mc", q: "What does this print?",
+            code: "class Cat:\n    def speak(self):\n        return \"Meow\"\nc = Cat()\nprint(c.speak())",
+            choices: ["Meow", "speak", "None", "Error"], answer: "Meow" },
+          { type: "fill", q: "Complete the method header so it can reach the object.",
+            code: "class Bird:\n    def fly(___):\n        print(\"flap\")", answer: "self" },
+          { type: "mc", q: "What does this print?",
+            code: "class Counter:\n    def __init__(self):\n        self.n = 0\n    def add(self):\n        self.n += 1\nc = Counter()\nc.add()\nc.add()\nprint(c.n)",
+            choices: ["2", "0", "1", "Error"], answer: "2" },
+          { type: "fill", q: "Call the greet method on the object p.",
+            code: "p.___()", answer: "greet" },
+          { type: "order", q: "Arrange a class with a method, then call it.",
+            lines: ["class Dog:", "    def bark(self):", "        print(\"Woof\")", "d = Dog()", "d.bark()"] }
+        ]
+      },
+      {
+        id: "oop_l3", name: "Inheritance", emoji: "🧬",
+        exercises: [
+          { type: "mc", q: "What does inheritance let a class do?",
+            choices: [
+              "Reuse attributes and methods from another class",
+              "Run faster",
+              "Loop over a list",
+              "Convert strings to numbers"
+            ],
+            answer: "Reuse attributes and methods from another class" },
+          { type: "mc", q: "How do you make Dog inherit from Animal?", codeChoices: true,
+            choices: ["class Dog(Animal):", "class Dog: Animal", "class Dog -> Animal:", "class Dog from Animal:"],
+            answer: "class Dog(Animal):" },
+          { type: "fill", q: "Make Cat inherit from Animal.",
+            code: "class Cat(___):\n    pass", answer: "Animal" },
+          { type: "mc", q: "What is it called when a child class replaces a parent's method?",
+            choices: ["Overriding", "Importing", "Indexing", "Slicing"], answer: "Overriding" },
+          { type: "mc", q: "What does this print?",
+            code: "class Animal:\n    def speak(self):\n        print(\"...\")\nclass Dog(Animal):\n    def speak(self):\n        print(\"Woof\")\nd = Dog()\nd.speak()",
+            choices: ["Woof", "...", "Animal", "Error"], answer: "Woof" },
+          { type: "mc", q: "What does this print?",
+            code: "class Animal:\n    def __init__(self):\n        self.alive = True\nclass Dog(Animal):\n    pass\nd = Dog()\nprint(d.alive)",
+            choices: ["True", "False", "None", "Error"], answer: "True" },
+          { type: "order", q: "Arrange a subclass Dog that inherits from Animal.",
+            lines: ["class Animal:", "    def speak(self):", "        print(\"Woof\")", "class Dog(Animal):", "    pass"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "logic", title: "Logic Gates", icon: "🔌",
+    color: "var(--indigo)", colorD: "var(--indigo-d)",
+    advanced: true,
+    levels: [
+      {
+        id: "logic_l1", name: "AND, OR, NOT", emoji: "🔀",
+        exercises: [
+          { type: "mc", q: "What does a logic gate do?",
+            choices: [
+              "Takes true/false inputs and gives a true/false output",
+              "Stores a number in memory",
+              "Repeats code many times",
+              "Converts text to numbers"
+            ],
+            answer: "Takes true/false inputs and gives a true/false output" },
+          { type: "mc", q: "An AND gate outputs True only when...",
+            choices: [
+              "both inputs are True",
+              "at least one input is True",
+              "both inputs are False",
+              "the inputs are different"
+            ],
+            answer: "both inputs are True" },
+          { type: "mc", q: "What does this print?", code: "print(True and False)",
+            choices: ["False", "True", "None", "Error"], answer: "False" },
+          { type: "mc", q: "What does this print?", code: "print(True or False)",
+            choices: ["True", "False", "None", "Error"], answer: "True" },
+          { type: "mc", q: "A NOT gate flips its input. What does this print?",
+            code: "print(not True)",
+            choices: ["False", "True", "not True", "Error"], answer: "False" },
+          { type: "mc", q: "Which Python operator works like an OR gate?", codeChoices: true,
+            choices: ["or", "and", "not", "=="], answer: "or" },
+          { type: "fill", q: "Complete the truth table for the AND gate.",
+            code: "A      B      A and B\nTrue   True   True\nTrue   False  False\nFalse  True   ___\nFalse  False  False",
+            answer: "False", accept: ["false"] }
+        ]
+      },
+      {
+        id: "logic_l2", name: "XOR, NAND & NOR", emoji: "⚡",
+        exercises: [
+          { type: "mc", q: "An XOR (exclusive or) gate outputs True when...",
+            choices: [
+              "the two inputs are different",
+              "both inputs are True",
+              "both inputs are False",
+              "the two inputs are the same"
+            ],
+            answer: "the two inputs are different" },
+          { type: "mc", q: "Which Python operator gives the XOR of two booleans?",
+            codeChoices: true,
+            choices: ["^", "and", "or", "not"], answer: "^" },
+          { type: "mc", q: "What does this print?", code: "print(True ^ True)",
+            choices: ["False", "True", "1", "Error"], answer: "False" },
+          { type: "mc", q: "What does this print?", code: "print(False ^ True)",
+            choices: ["True", "False", "0", "Error"], answer: "True" },
+          { type: "mc", q: "A NAND gate is 'NOT AND'. Its output is False only when...",
+            choices: [
+              "both inputs are True",
+              "both inputs are False",
+              "the inputs are different",
+              "it is never False"
+            ],
+            answer: "both inputs are True" },
+          { type: "mc", q: "What does this NAND of True and True print?",
+            code: "print(not (True and True))",
+            choices: ["False", "True", "None", "Error"], answer: "False" },
+          { type: "fill", q: "Complete the truth table for the XOR gate.",
+            code: "A      B      A ^ B\nTrue   True   False\nTrue   False  True\nFalse  True   ___\nFalse  False  False",
+            answer: "True", accept: ["true"] }
+        ]
+      },
+      {
+        id: "logic_l3", name: "Truth Tables", emoji: "📊",
+        exercises: [
+          { type: "mc", q: "What does a truth table show?",
+            choices: [
+              "Every input combination and its output",
+              "Only the True results",
+              "Which gate runs fastest",
+              "A list of variable names"
+            ],
+            answer: "Every input combination and its output" },
+          { type: "mc", q: "How many rows does a truth table with 2 inputs have?",
+            choices: ["4", "2", "3", "8"], answer: "4" },
+          { type: "fill", q: "Complete the truth table for the OR gate.",
+            code: "A      B      A or B\nTrue   True   True\nTrue   False  ___\nFalse  True   True\nFalse  False  False",
+            answer: "True", accept: ["true"] },
+          { type: "fill", q: "Complete the truth table for the NOT gate.",
+            code: "A      not A\nTrue   False\nFalse  ___",
+            answer: "True", accept: ["true"] },
+          { type: "mc", q: "A NOR gate outputs True only when...",
+            choices: [
+              "both inputs are False",
+              "both inputs are True",
+              "the inputs are different",
+              "it is always True"
+            ],
+            answer: "both inputs are False" },
+          { type: "mc", q: "What does this NOR of True and False print?",
+            code: "print(not (True or False))",
+            choices: ["False", "True", "None", "Error"], answer: "False" },
+          { type: "mc", q: "Which gate does this expression represent?",
+            code: "not (A or B)",
+            choices: ["NOR", "NAND", "XOR", "AND"], answer: "NOR" }
+        ]
+      }
+    ]
   }
 ];
 
@@ -2146,6 +2350,74 @@ function genFuncDefault() {
   };
 }
 
+/* ---- logic gates topic ---- */
+// Evaluate a random 2-input gate written as a Python expression.
+function genLogicEval() {
+  const a = pickFrom([true, false]);
+  const b = pickFrom([true, false]);
+  const A = a ? "True" : "False";
+  const B = b ? "True" : "False";
+  const gate = pickFrom(["and", "or", "xor", "nand", "nor"]);
+  let r, expr;
+  if (gate === "and")       { r = a && b;       expr = `${A} and ${B}`; }
+  else if (gate === "or")   { r = a || b;       expr = `${A} or ${B}`; }
+  else if (gate === "xor")  { r = a !== b;      expr = `${A} ^ ${B}`; }
+  else if (gate === "nand") { r = !(a && b);    expr = `not (${A} and ${B})`; }
+  else                      { r = !(a || b);    expr = `not (${A} or ${B})`; }
+  return {
+    type: "mc",
+    q: "What does this print?",
+    code: `print(${expr})`,
+    codeChoices: true,
+    choices: ["True", "False"],
+    answer: r ? "True" : "False"
+  };
+}
+
+// Name the gate that a Python expression implements.
+function genGateName() {
+  const gate = pickFrom([
+    { name: "AND",  expr: "a and b" },
+    { name: "OR",   expr: "a or b" },
+    { name: "XOR",  expr: "a ^ b" },
+    { name: "NAND", expr: "not (a and b)" },
+    { name: "NOR",  expr: "not (a or b)" }
+  ]);
+  const others = shuffle(["AND", "OR", "XOR", "NAND", "NOR"].filter(n => n !== gate.name));
+  return {
+    type: "mc",
+    q: "Which logic gate does this expression represent?",
+    code: gate.expr,
+    choices: distinctChoices(gate.name, others, 4),
+    answer: gate.name
+  };
+}
+
+// Fill in one missing output cell of a gate's truth table.
+function genTruthRow() {
+  const gate = pickFrom([
+    { label: "A and B", fn: (a, b) => a && b },
+    { label: "A or B",  fn: (a, b) => a || b },
+    { label: "A ^ B",   fn: (a, b) => a !== b }
+  ]);
+  const rows = [[true, true], [true, false], [false, true], [false, false]];
+  const hide = pickInt(0, 3);
+  const bs = v => (v ? "True" : "False");
+  const lines = ["A".padEnd(7) + "B".padEnd(7) + gate.label];
+  rows.forEach((row, i) => {
+    const out = i === hide ? "___" : bs(gate.fn(row[0], row[1]));
+    lines.push(bs(row[0]).padEnd(7) + bs(row[1]).padEnd(7) + out);
+  });
+  const ans = bs(gate.fn(rows[hide][0], rows[hide][1]));
+  return {
+    type: "fill",
+    q: `Complete the truth table for ${gate.label}.`,
+    code: lines.join("\n"),
+    answer: ans,
+    accept: [ans.toLowerCase()]
+  };
+}
+
 const PRACTICE_GENERATORS = [
   { topic: "vars",    gen: genCompoundAssign },
   { topic: "vars",    gen: genTypeOf },
@@ -2164,7 +2436,10 @@ const PRACTICE_GENERATORS = [
   { topic: "lists",   gen: genListLen },
   { topic: "lists",   gen: genListMembership },
   { topic: "funcs",   gen: genFuncDouble },
-  { topic: "funcs",   gen: genFuncDefault }
+  { topic: "funcs",   gen: genFuncDefault },
+  { topic: "logic",   gen: genLogicEval },
+  { topic: "logic",   gen: genGateName },
+  { topic: "logic",   gen: genTruthRow }
 ];
 
 function practiceTopicUnlocked(topicId) {
