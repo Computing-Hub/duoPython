@@ -45,12 +45,14 @@ list is the `screens` array. The home screen is `mapScreen`.
 high score are stored under separate keys. Always go through `saveState()` after mutating
 `state`.
 
-**Course content is data, in `TOPICS`** (`index.html:743`). 8 topics × 3 levels (L1→L2→L3),
-each level holding an array of `exercises`. The 4 **core** topics are `vars, select, loops,
-funcs`; the 4 `advanced: true` topics (`strings`, `lists`, `oop`, `logic`) stay locked until
-L2 is cleared in at least `ADVANCED_UNLOCK_THRESHOLD` (2) core topics — see `topicUnlocked()`
-/ `coreL2Cleared()`. Within a topic, levels unlock sequentially (`levelState()`). **To add
-or change lessons, edit the `TOPICS` data — no code changes needed.**
+**Course content is data, in `TOPICS`** (`index.html:743`). 10 topics × 3 levels (L1→L2→L3),
+each level holding an array of `exercises`. The 4 **core** topics are listed explicitly in
+`CORE_TOPIC_IDS` (`vars, select, loops, funcs`); the 6 `advanced: true` topics (`strings`,
+`lists`, `oop`, `logic`, `datarep`, `media`) stay locked until L2 is cleared in at least
+`ADVANCED_UNLOCK_THRESHOLD` (2) core topics — see `topicUnlocked()` / `coreL2Cleared()`.
+Within a topic, levels unlock sequentially (`levelState()`). **To add or change lessons,
+edit the `TOPICS` data — no code changes needed.** Each topic needs a `color`/`colorD` pair
+from the `:root` palette (one distinct colour per topic).
 
 **Exercise type system.** Each exercise has a `type` that drives both rendering and grading:
 - `mc` — multiple choice (`renderMC`); `codeChoices: true` renders choices in monospace
