@@ -824,6 +824,35 @@ const TOPICS = [
           { type: "tokens", q: "Build a line that subtracts 1 from lives (short form).",
             tokens: ["lives", "-=", "1"] }
         ]
+      },
+      {
+        id: "vars_l4", name: "Casting", emoji: "🔄",
+        exercises: [
+          { type: "mc", q: "What type does input() always return?", codeChoices: true,
+            choices: ["str", "int", "float", "bool"], answer: "str" },
+          { type: "mc", q: "The user types 5. What does this print?",
+            code: "age = input()\nprint(age + 1)",
+            choices: ["Error", "6", "51", "5"], answer: "Error" },
+          { type: "mc", q: "Why do we often wrap input() in int()?",
+            choices: [
+              "Because input() returns a string, not a number",
+              "To make the program run faster",
+              "To round the number to a whole number",
+              "It is never actually needed"
+            ],
+            answer: "Because input() returns a string, not a number" },
+          { type: "fill", q: "Read a whole number typed by the user.",
+            code: "n = ___(input())", answer: "int" },
+          { type: "mc", q: "What does this print?", code: "print(float(\"2.5\") + 1)",
+            choices: ["3.5", "2.51", "Error", "3"], answer: "3.5" },
+          { type: "mc", q: "What does this print?", code: "print(int(3.9))",
+            choices: ["3", "4", "3.9", "Error"], answer: "3" },
+          { type: "mc", q: "Which converts the string \"3.5\" to a decimal number?", codeChoices: true,
+            choices: ["float(\"3.5\")", "int(\"3.5\")", "str(\"3.5\")", "round(\"3.5\")"],
+            answer: "float(\"3.5\")" },
+          { type: "tokens", q: "Convert score (a string of digits) to an integer.",
+            tokens: ["score", "=", "int(score)"] }
+        ]
       }
     ]
   },
@@ -903,6 +932,34 @@ const TOPICS = [
           { type: "mc", q: "What does this print?",
             code: "x = 0\nif x > 0:\n    if x < 10:\n        print(\"small +\")\nelse:\n    print(\"zero or neg\")",
             choices: ["zero or neg", "small +", "0", "Nothing"], answer: "zero or neg" }
+        ]
+      },
+      {
+        id: "sel_l4", name: "Ternary & Nesting", emoji: "🪺",
+        exercises: [
+          { type: "mc", q: "What does this print?",
+            code: "x = 7\nprint(\"even\" if x % 2 == 0 else \"odd\")",
+            choices: ["odd", "even", "7", "Error"], answer: "odd" },
+          { type: "mc", q: "What does  a if c else b  do?",
+            choices: [
+              "Gives a when c is True, otherwise b",
+              "Always gives a",
+              "Loops while c is True",
+              "Defines a function"
+            ],
+            answer: "Gives a when c is True, otherwise b" },
+          { type: "fill", q: "Set status to \"pass\" when score >= 50, else \"fail\".",
+            code: "status = \"pass\" if score >= 50 ___ \"fail\"", answer: "else" },
+          { type: "mc", q: "What does this print?",
+            code: "age = 20\nmsg = \"adult\" if age >= 18 else \"minor\"\nprint(msg)",
+            choices: ["adult", "minor", "20", "True"], answer: "adult" },
+          { type: "mc", q: "What does this print?",
+            code: "x = 8\nif x > 0:\n    if x > 5:\n        print(\"big positive\")\n    else:\n        print(\"small positive\")",
+            choices: ["big positive", "small positive", "Nothing", "Error"], answer: "big positive" },
+          { type: "tokens", q: "Build the value: \"A\" when mark is at least 90, otherwise \"B\".",
+            tokens: ["\"A\"", "if", "mark", ">=", "90", "else", "\"B\""] },
+          { type: "order", q: "Arrange so it prints \"VIP\" only when member is True and points are over 100.",
+            lines: ["member = True", "points = 150", "if member:", "    if points > 100:", "        print(\"VIP\")"] }
         ]
       }
     ]
@@ -986,6 +1043,30 @@ const TOPICS = [
           { type: "order", q: "Arrange the code to print the total of 1+2+3.",
             lines: ["total = 0", "for i in range(1, 4):", "    total += i", "print(total)"] }
         ]
+      },
+      {
+        id: "loops_l4", name: "Patterns & Steps", emoji: "📈",
+        exercises: [
+          { type: "mc", q: "What numbers does range(0, 10, 2) produce?",
+            choices: ["0, 2, 4, 6, 8", "0, 2, 4, 6, 8, 10", "2, 4, 6, 8", "0, 1, 2 ... 10"],
+            answer: "0, 2, 4, 6, 8" },
+          { type: "mc", q: "What does count end up as?",
+            code: "count = 0\nfor n in range(10):\n    if n % 3 == 0:\n        count += 1\nprint(count)",
+            choices: ["4", "3", "9", "10"], answer: "4" },
+          { type: "mc", q: "What numbers does this print, in order?",
+            code: "for i in range(5, 0, -1):\n    print(i)",
+            choices: ["5, 4, 3, 2, 1", "1, 2, 3, 4, 5", "5, 4, 3, 2, 1, 0", "0, 1, 2, 3, 4"],
+            answer: "5, 4, 3, 2, 1" },
+          { type: "fill", q: "Loop over every SECOND number from 0 up to (not including) 20.",
+            code: "for i in range(0, 20, ___):\n    print(i)", answer: "2" },
+          { type: "mc", q: "What does this print?",
+            code: "biggest = 0\nfor n in range(1, 6):\n    if n > biggest:\n        biggest = n\nprint(biggest)",
+            choices: ["5", "1", "6", "15"], answer: "5" },
+          { type: "tokens", q: "Build a loop header that counts 10, 20, 30 ... up to 50.",
+            tokens: ["for", "i", "in", "range", "(", "10", ",", "60", ",", "10", ")", ":"] },
+          { type: "order", q: "Arrange the code to print the total of 0+2+4+6+8.",
+            lines: ["total = 0", "for i in range(0, 10, 2):", "    total += i", "print(total)"] }
+        ]
       }
     ]
   },
@@ -1066,6 +1147,25 @@ const TOPICS = [
             answer: "Error: x is not defined outside the function" },
           { type: "tokens", q: "Call greet with the name \"Sam\" and the age 12.",
             tokens: ["greet", "(", "\"Sam\"", ",", "12", ")"] }
+        ]
+      },
+      {
+        id: "funcs_l4", name: "Built-in Functions", emoji: "📚",
+        exercises: [
+          { type: "mc", q: "What does this print?", code: "print(len(\"hello\"))",
+            choices: ["5", "4", "6", "hello"], answer: "5" },
+          { type: "mc", q: "What does this print?", code: "print(max(3, 8, 5))",
+            choices: ["8", "3", "5", "16"], answer: "8" },
+          { type: "mc", q: "What does this print?", code: "print(min(4, 2, 9))",
+            choices: ["2", "4", "9", "15"], answer: "2" },
+          { type: "mc", q: "What does this print?", code: "print(abs(-7))",
+            choices: ["7", "-7", "0", "14"], answer: "7" },
+          { type: "mc", q: "What does this print?", code: "print(round(3.7))",
+            choices: ["4", "3", "3.7", "3.5"], answer: "4" },
+          { type: "fill", q: "Find how many characters are in the word stored in name.",
+            code: "n = ___(name)", answer: "len" },
+          { type: "tokens", q: "Build a call that finds the largest of a, b and c.",
+            tokens: ["max", "(", "a", ",", "b", ",", "c", ")"] }
         ]
       }
     ]
@@ -1892,7 +1992,7 @@ function renderMap() {
     const header = el("div", "topic-header");
     if (unlocked) header.style.background = topic.color;
     const subText = unlocked
-      ? `Level 1 · Level 2 · Level 3`
+      ? topic.levels.map((_, i) => `Level ${i + 1}`).join(" · ")
       : `Locked`;
     header.innerHTML =
       `<span class="t-icon">${unlocked ? topic.icon : "🔒"}</span>

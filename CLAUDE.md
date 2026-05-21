@@ -25,7 +25,7 @@ There are no automated tests or lint — verification is manual in a browser.
 
 ## Where everything lives
 
-Almost the entire app is **`index.html`** (~2980 lines): `<style>` block, then one big
+Almost the entire app is **`index.html`** (~3360 lines): `<style>` block, then one big
 `<script>`. The other tracked files are small and supporting:
 
 - `sw.js` — service worker (offline cache + update banner)
@@ -36,7 +36,7 @@ Almost the entire app is **`index.html`** (~2980 lines): `<style>` block, then o
 ## Architecture (the parts that span files / functions)
 
 **Screens, not routes.** The UI is a set of full-screen `<div>`s; `showScreen(id)` (around
-`index.html:1614`) hides all and shows one. There is no router and no URL state. The screen
+`index.html:1971`) hides all and shows one. There is no router and no URL state. The screen
 list is the `screens` array. The home screen is `mapScreen`.
 
 **Single `state` object → localStorage.** `state = { xp, completed, streak, lastActive }`
@@ -45,8 +45,12 @@ list is the `screens` array. The home screen is `mapScreen`.
 high score are stored under separate keys. Always go through `saveState()` after mutating
 `state`.
 
-**Course content is data, in `TOPICS`** (`index.html:743`). 10 topics × 3 levels (L1→L2→L3),
-each level holding an array of `exercises`. The 4 **core** topics are listed explicitly in
+**Course content is data, in `TOPICS`** (`index.html:747`). 10 topics. The 4 **core** topics
+have 4 levels each (L1→L4 — the 4th being `vars_l4` "Casting", `sel_l4` "Ternary & Nesting",
+`loops_l4` "Patterns & Steps", `funcs_l4` "Built-in Functions"); the 6 **advanced** topics
+have 3 levels (L1→L3). Each level holds an array of `exercises`. Level count per topic is not
+fixed: the map renders one node per `topic.levels` entry and the card subtext is generated
+from that array, so adding/removing a level needs no other code changes. The 4 **core** topics are listed explicitly in
 `CORE_TOPIC_IDS` (`vars, select, loops, funcs`); the 6 `advanced: true` topics (`strings`,
 `lists`, `oop`, `logic`, `datarep`, `media`) stay locked until L2 is cleared in at least
 `ADVANCED_UNLOCK_THRESHOLD` (2) core topics — see `topicUnlocked()` / `coreL2Cleared()`.
@@ -71,7 +75,7 @@ dispatch (`renderExercise`), `isCorrect`, `correctText`, and `hasResponse`.
   (`ARCADE_TIER_L2/L3`) that fold harder questions into the pool. Pulls real exercises out
   of `TOPICS` via `arcadePool()`.
 - **Practice** (`openPractice`/`startPractice`) — endless, **procedurally generated**
-  questions. `PRACTICE_GENERATORS` (`index.html:2421`) maps each topic to `gen*` functions
+  questions. `PRACTICE_GENERATORS` (`index.html:2892`) maps each topic to `gen*` functions
   that build fresh exercises with `pickInt`/`pickFrom`/`distinctChoices`. A generator only
   becomes eligible once the student has **completed a level** in the matching `TOPICS` track
   (`practiceTopicUnlocked` → `eligiblePracticeGenerators`). Not every track has generators
